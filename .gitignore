@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Others
+refs/
+dicom/
+aula-exercicios
+kaggle/datasets/awsaf49
+kaggle/datasets/temp
+kaggle/datasets/tommyngx
+challenge/temp
+temp/
