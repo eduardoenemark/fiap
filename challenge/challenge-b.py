@@ -10,9 +10,12 @@ import functions as func
 
 """
     NOTA TÉCNICA:
-    Devido a complexidade do assunto tratado transposto em código de programação então optei por dividir em arquivo dedicado somente
-    a funções para o suporte do fluxo tratado, functions.py, e um segundo dedicado para o desenvolvimento de todo o fluxo de análise, 
-    pré-processamento e treinamento do modelo, challenge-b.py.
+    - Devido a complexidade do assunto tratado transposto em código de programação então optei por dividir em arquivo dedicado somente
+      a funções para o suporte do fluxo tratado, functions.py, e um segundo dedicado para o desenvolvimento de todo o fluxo de análise, 
+      pré-processamento e treinamento do modelo, challenge-b.py.
+    - Isto é apenas uma prática de um exercício (desafio) de machine learning. Logo não tem nenhuma pretensão de ser usada em ambiente
+      de produção.
+    - Sinta-se livre para copiar ou modificar.
 """
 
 # --------------- ABOUT --------------------------------------------------------------
@@ -147,11 +150,11 @@ ESTROGENIO_STATUS_DOMINIO = ['positive', 'negative']
 PROGESTERONA_STATUS_DOMINIO = ['positive', 'negative']
 STATUS_DOMINIO = ['dead', 'alive']
 
-IDADE_RANGE = (0, 120)
+IDADE_RANGE = (0, 80)
 TAMANHO_DO_TUMOR_RANGE = (1, 140)
 LINFONODOS_REGIONAIS_EXAMINADOS_RANGE = (1, 61)
 LINFONODOS_REGIONAIS_POSITIVOS_RANGE = (1, 46)
-MESES_DE_SOBREVIDA_RANGE = (0, 12000)
+MESES_DE_SOBREVIDA_RANGE = (0, 720)
 
 # --------------- TRANSFORMACAO BASICA DOS DADOS E VALIDACAO -------------------------
 """
@@ -216,26 +219,50 @@ func.fprint(f"Total de linhas duplicadas: {sum_duplicated_lines}")
 if sum_duplicated_lines > 0:
     dataset.drop_duplicates(inplace=True)
 
-
-func.fprint(f"Total de linhas removidas apos as transformacoes e validacoes do dataset {dataset_initial_rows - func.get_total_rows(dataset)}")
-
+func.fprint(
+    f"Total de linhas removidas apos as transformacoes e validacoes do dataset {dataset_initial_rows - func.get_total_rows(dataset)}")
 
 # --------------- DETECÇÃO DE OUTLIERS -----------------------------------------------
 """
     A detecção de outliers pode ser realizada utilizando o método Local Outlier Factor (LOF), que é um algoritmo de
     detecção de anomalias baseado em densidade. Ele identifica pontos que estão em regiões de baixa densidade em
     comparação com seus vizinhos, o que pode indicar que são outliers.
+    
+    Quando de certa forma não somos especialistas nos dados tratados em um dataset procuramos estratégias como "find best"
+    para parâmetros como n_neighbors_range, por exemplo. Esta estratégia tem a desvantagem de desprender maior custo
+    computacional de processamento de dados.
 """
-outliers_lof = func.detect_outliers_lof(dataset[COLUNAS_NUMERICAS])
+
+func.fprint(f"len(COLUNAS_NUMERICAS)={len(COLUNAS_NUMERICAS)}")
+lof_n_neighbors, lof_contamination = func.find_best_lof_parameters(X=dataset[COLUNAS_NUMERICAS],
+                                                                   n_neighbors_range=range(3, len(COLUNAS_NUMERICAS)))
+func.fprint(f"LOF n neighbors: {lof_n_neighbors}, contamination: {lof_contamination}")
+
+outliers_lof = func.detect_outliers_lof(X=dataset[COLUNAS_NUMERICAS],
+                                        n_neighbors=lof_n_neighbors,
+                                        contamination=lof_contamination)
+
+func.fprint(f"LOF percentual de outliers: {func.get_outlier_percentage(outliers_lof)}%")
+
 outliers_lof_labels = func.map_in_and_outlier_labels(outliers_lof)
 
 func.plot_distribution_grid(outliers_lof_labels,
                             outliers_lof_labels.columns,
                             plot_type='count',
-                            suptitle='Distribuição de Outliers (LOF)')
+                            suptitle=f"Distribuição de Outliers (LOF): {func.get_outlier_percentage(outliers_lof)}%")
+
 
 # --------------- HISTOGRAMA DAS COLUNAS ---------------------------------------------
 """
+    O histograma com um gráfico de barras que representa a distribuição de frequência de um conjunto de dados, nos ajuda a 
+    visualizar quantidades, como estão distribuídas e possíveis diferenças acentuadas.
+    
+    A função plot_distribution_grid em plot_type do tipo hist (histograma) traz sobre o gráfico de barras o KDE (Kernel Density
+    Estimation) que é uma técnica estatística que cria uma curva que representa a distribuição de dados, mostra onde os dados 
+    estão mais concentrados.
+
+    Quando temos colunas não numéricas fazemos o gráfico de contagem (count) que é um tipo de gráfico de barras que mostra a
+    frequência de cada categoria em uma coluna categórica.
 """
 # colunas numéricas hist:
 func.plot_distribution_grid(dataset, COLUNAS_NUMERICAS, plot_type='hist')
@@ -244,6 +271,9 @@ func.plot_distribution_grid(dataset, COLUNAS_NUMERICAS, plot_type='hist')
 func.plot_distribution_grid(dataset, COLUNAS_STRINGS, plot_type='count')
 
 # --------------- BOXPLOT DAS COLUNAS ------------------------------------------------
+"""
+    O boxplot é uma representação gráfica que mostra a distribuição de um conjunto de dados numéricos através de seus quartis, mediana e possíveis outliers. Ele é útil para identificar a presença de outliers, a simetria da distribuição e a dispersão dos dados.
+"""
 func.plot_boxplot_outliers(dataset, COLUNAS_NUMERICAS)
 
 # --------------- HEATMAP DAS COLUNAS ------------------------------------------------

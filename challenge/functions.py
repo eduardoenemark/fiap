@@ -4,19 +4,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sb
-from pandas.core.interchange.dataframe_protocol import DataFrame
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import IsolationForest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-from sklearn.neighbors import KNeighborsClassifier, LocalOutlierFactor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-
 
 # --------------- CONSTANTES ---------------------------------------------------------
 """
@@ -77,6 +76,7 @@ def convert_columns_to_string(df, columns):
     """
     df[columns] = df[columns].astype(str)
     return df
+
 
 def convert_columns_to_numeric(df, columns):
     """
@@ -223,7 +223,6 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
     plt.show()
 
 
-# ----- FUNÇÃO PARA ENCONTRAR MELHOR KNN -----
 def get_best_knn_classifier(x_train, y_train, x_test, y_test, k_range=range(1, 20)):
     """
     Encontra e retorna o classificador KNN com a melhor acurácia no conjunto de teste.
@@ -367,6 +366,38 @@ def detect_outliers_lof(X, n_neighbors=20, contamination='auto'):
     """
     lof = LocalOutlierFactor(n_neighbors=n_neighbors, contamination=contamination)
     return lof.fit_predict(X)
+
+
+def find_best_lof_parameters(X, n_neighbors_range=range(2, 20), contamination_range=np.arange(0.01, 0.10, 0.01)):
+    """
+    Encontra os melhores valores para n_neighbors e contamination do LocalOutlierFactor.
+
+    Parâmetros:
+    X (array-like): Os dados de entrada
+    n_neighbors_range (range): Faixa de valores de n_neighbors a testar
+    contamination_range (array-like): Faixa de valores de contamination a testar
+
+    Retorna:
+    tuple: Os melhores valores (n_neighbors, contamination)
+    """
+
+    # Armazena os resultados
+    results = []
+
+    # Loop através de cada combinação de parâmetros
+    for n_neighbors in n_neighbors_range:
+        for contamination in contamination_range:
+            lof = LocalOutlierFactor(n_neighbors=n_neighbors, contamination=contamination)
+            outlier_labels = lof.fit_predict(X)
+
+            # Conta os outliers (assumindo que -1 indica um outlier)
+            outlier_count = np.sum(outlier_labels == -1)
+            results.append((n_neighbors, contamination, outlier_count))
+
+    # Encontra os parâmetros que fornecem o número desejado de outliers
+    # Ou usa outros critérios para selecionar o melhor
+    best_params = max(results, key=lambda x: x[2])  # Exemplo: minimizar a contagem de outliers
+    return best_params[0], best_params[1]
 
 
 def detect_outliers_isolation_forest(X_train, contamination=0.1, random_state=42):
