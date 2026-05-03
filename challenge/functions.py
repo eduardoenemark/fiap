@@ -6,13 +6,12 @@ import pandas as pd
 import seaborn as sb
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import IsolationForest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import LocalOutlierFactor
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -88,7 +87,7 @@ def plot_distribution_grid(df, columns, plot_type='hist', suptitle='Distribuiç�
 
     for i, col in enumerate(columns):
         ax = axes_flat[i]
-        #TODO: Alterar a cor da linha do kde para red.
+        # TODO: Alterar a cor da linha do kde para red.
         if plot_type == 'hist':
             sb.histplot(df[col].dropna(),
                         kde=True,
@@ -108,7 +107,7 @@ def plot_distribution_grid(df, columns, plot_type='hist', suptitle='Distribuiç�
                 ax.annotate(f'{int(p.get_height())}',
                             (p.get_x() + p.get_width() / 2., p.get_height()),
                             ha='center', va='bottom', fontsize=8)
-    # Hide unused axes
+    # Oculta eixos não utilizados
     for ax in axes_flat[num_cols:]:
         ax.set_visible(False)
 
@@ -120,7 +119,7 @@ def plot_distribution_grid(df, columns, plot_type='hist', suptitle='Distribuiç�
 
 def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
     """
-    Gera um grid de boxplots para as colunas especificadas, marcando os outliers.
+    Gera um grid de boxplots para as colunas especificadas, marcando os valores anômalos (outliers).
     Adiciona agrupamento de valores no eixo Y para facilitar a leitura.
 
     Args:
@@ -130,22 +129,22 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
         y_group_size (int): Tamanho do intervalo para agrupamento de valores no eixo Y.
                            Se None, usa valor automático baseado nos dados.
     """
-    # Filter to only numeric columns
+    # Filtra apenas colunas numéricas
     numeric_columns = []
     for col in columns:
         try:
-            # Test if column can be converted to numeric
+            # Testa se a coluna pode ser convertida para numérico
             pd.to_numeric(df[col].dropna())
             numeric_columns.append(col)
         except (ValueError, TypeError):
-            continue  # Skip non-numeric columns
+            continue  # Ignora colunas não numéricas
 
     num_cols = len(numeric_columns)
     if num_cols == 0:
         print("Nenhuma coluna numérica encontrada para plotar.")
         return
 
-    # Adjust figure size based on number of columns to prevent label overlap
+    # Ajusta o tamanho da figura com base no número de colunas para evitar sobreposição de rótulos
     fig_width = max(10, num_cols)
     fig_height = max(5, (num_cols + 1) // 2 * 3)
     fig, axes = plt.subplots((num_cols + 1) // 2, 2, figsize=(fig_width, fig_height))
@@ -154,7 +153,7 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
     for i, col in enumerate(numeric_columns):
         ax = axes_flat[i]
 
-        # Convert to numeric explicitly, handling errors
+        # Converte explicitamente para numérico, tratando erros
         col_data = pd.to_numeric(df[col], errors='coerce').dropna()
 
         if len(col_data) == 0:
@@ -166,29 +165,29 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
         ax.set_title(f'Boxplot: {col}', fontsize=10)
         ax.set_xlabel('')
 
-        # Configure Y-axis grouping
+        # Configura agrupamento no eixo Y
         if y_group_size is None:
-            # Auto-calculate group size based on data range
+            # Calcula automaticamente o tamanho do grupo com base na faixa dos dados
             if len(col_data) > 0:
                 range_val = col_data.max() - col_data.min()
-                # Aim for ~5-10 ticks on Y axis
+                # Busca ~5-10 marcas no eixo Y
                 y_group_size_auto = max(1, int(range_val / 8))
             else:
                 y_group_size_auto = 1
         else:
             y_group_size_auto = y_group_size
 
-        # Set Y-axis ticks to group values
+        # Define marcas no eixo Y agrupando os valores
         if len(col_data) > 0:
             y_min = col_data.min()
             y_max = col_data.max()
-            # Create evenly spaced ticks with group size
+            # Cria marcas igualmente espaçadas com o tamanho do grupo
             y_ticks = np.arange(math.floor(y_min / y_group_size_auto) * y_group_size_auto,
                                 math.ceil(y_max / y_group_size_auto) * y_group_size_auto + y_group_size_auto,
                                 y_group_size_auto)
             ax.set_yticks(y_ticks)
 
-    # Hide unused axes
+    # Oculta eixos não utilizados
     for ax in axes_flat[num_cols:]:
         ax.set_visible(False)
 
