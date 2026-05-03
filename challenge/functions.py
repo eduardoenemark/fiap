@@ -12,10 +12,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import LocalOutlierFactor
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, OrdinalEncoder
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+
 
 # --------------- CONSTANTES ---------------------------------------------------------
 """
@@ -26,7 +27,7 @@ RANDOM_STATE = 42
 
 # --------------- FUNCTIONS ----------------------------------------------------------
 
-def fprint(str):
+def fprint(str:str|object):
     """
     Imprime uma mensagem formatada no console com linhas de separação visuais.
 
@@ -34,19 +35,6 @@ def fprint(str):
         str (str): A mensagem a ser exibida.
     """
     print(f'{"-" * 80}\n{str}')
-
-
-def get_total_elements(df):
-    """
-    Retorna o número total de elementos (linhas * colunas) em um DataFrame.
-
-    Args:
-        df (pd.DataFrame): O dataset de entrada.
-
-    Returns:
-        int: Número total de elementos no DataFrame.
-    """
-    return df.shape[0] * df.shape[1]
 
 
 def get_total_rows(df):
@@ -60,22 +48,6 @@ def get_total_rows(df):
         int: Número total de linhas no DataFrame.
     """
     return df.shape[0]
-
-
-def convert_columns_to_string(df, columns):
-    """
-    Converte múltiplas colunas especificadas de um DataFrame para o tipo string.
-    Utiliza métodos vetorizados do Pandas para melhor performance e consistência.
-
-    Args:
-        df (pd.DataFrame): O dataset de entrada.
-        columns (list): Lista com os nomes das colunas a serem convertidas.
-
-    Returns:
-        pd.DataFrame: O DataFrame com as colunas convertidas para string.
-    """
-    df[columns] = df[columns].astype(str)
-    return df
 
 
 def convert_columns_to_numeric(df, columns):
@@ -116,6 +88,7 @@ def plot_distribution_grid(df, columns, plot_type='hist', suptitle='Distribuiç�
 
     for i, col in enumerate(columns):
         ax = axes_flat[i]
+        #TODO: Alterar a cor da linha do kde para red.
         if plot_type == 'hist':
             sb.histplot(df[col].dropna(),
                         kde=True,
@@ -173,7 +146,7 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
         return
 
     # Adjust figure size based on number of columns to prevent label overlap
-    fig_width = max(10, num_cols * 3)
+    fig_width = max(10, num_cols)
     fig_height = max(5, (num_cols + 1) // 2 * 3)
     fig, axes = plt.subplots((num_cols + 1) // 2, 2, figsize=(fig_width, fig_height))
     axes_flat = axes.flatten()
@@ -187,7 +160,8 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
         if len(col_data) == 0:
             continue
 
-        sb.boxplot(y=col_data, ax=ax,
+        sb.boxplot(y=col_data,
+                   ax=ax,
                    flierprops={'markerfacecolor': 'red', 'marker': 'o', 'markersize': 8})
         ax.set_title(f'Boxplot: {col}', fontsize=10)
         ax.set_xlabel('')
@@ -250,19 +224,6 @@ def get_best_knn_classifier(x_train, y_train, x_test, y_test, k_range=range(1, 2
             best_acc = acc
             best_instance = instance
     return best_instance
-
-
-def get_linear_svc_classifier(random_state=42):
-    """
-    Retorna uma instância de LinearSVC configurada.
-
-    Args:
-        random_state (int): Semente para reprodutibilidade.
-
-    Returns:
-        LinearSVC: Uma instância de SVC linear.
-    """
-    return LinearSVC(random_state=random_state)
 
 
 def get_linear_svc_for_voting(random_state=42):
@@ -400,23 +361,6 @@ def find_best_lof_parameters(X, n_neighbors_range=range(2, 20), contamination_ra
     return best_params[0], best_params[1]
 
 
-def detect_outliers_isolation_forest(X_train, contamination=0.1, random_state=42):
-    """
-    Detecta outliers no conjunto de treinamento usando Isolation Forest.
-
-    Args:
-        X_train (array-like): Features numéricas de treinamento.
-        contamination (float): Proporção esperada de outliers no dataset (float entre 0 e 0.5).
-        random_state (int): Semente para reprodutibilidade.
-
-    Returns:
-        tuple: (labels, model) onde labels são -1 para outliers e 1 para inliers.
-    """
-    model = IsolationForest(contamination=contamination, random_state=random_state)
-    labels = model.fit_predict(X_train)
-    return labels, model
-
-
 def map_in_and_outlier_labels(labels, column: str = 'in_and_outlier_labels') -> pd.DataFrame:
     """
     Mapeia rótulos numéricos de outliers (1/-1) para rótulos descritivos ('inlier'/'outlier')
@@ -526,4 +470,3 @@ def encode_labels(y):
     encoder = LabelEncoder()
     y_encoded = encoder.fit_transform(y)
     return y_encoded
-

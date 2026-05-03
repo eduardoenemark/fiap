@@ -80,27 +80,61 @@ assert (dataset.isnull().sum() == 0).all()
     O mapeamento do nome das colunas do CSV para variáveis é feito para facilitar a leitura e manutenção do código, além de evitar erros de digitação.
     As colunas são categorizadas em numéricas e string para facilitar as etapas de pré-processamento e análise.
 """
-COL_IDADE = 'Age'  # type int
-COL_RACA = 'Race'  # type str
-COL_ESTADO_CIVIL = 'Marital Status'  # type str
-COL_ESTAGIO_T = 'T Stage '  # type str
-COL_ESTAGIO_N = 'N Stage'  # type str
-COL_ESTADIO_AJCC = '6th Stage'  # type str
-COL_DIFERENCIACAO = 'differentiate'  # type str
-COL_GRAU_HISTOLOGICO = 'Grade'  # type int
-COL_ESTAGIO_DE_EXTENSAO = 'A Stage'  # type str
-COL_TAMANHO_DO_TUMOR = 'Tumor Size'  # type int
-COL_ESTROGENIO_STATUS = 'Estrogen Status'  # type str
-COL_PROGESTERONA_STATUS = 'Progesterone Status'  # type str
-COL_LINFONODOS_REGIONAIS_EXAMINADOS = 'Regional Node Examined'  # type int
-COL_LINFONODOS_REGIONAIS_POSITIVOS = 'Reginol Node Positive'  # type int
-COL_MESES_DE_SOBREVIDA = 'Survival Months'  # type int
+COL_IDADE = 'Idade'  # type int
+COL_RACA = 'Raça'  # type str
+COL_ESTADO_CIVIL = 'Estado Civil'  # type str
+COL_ESTAGIO_T = 'Estágio T'  # type str
+COL_ESTAGIO_N = 'Estágio N'  # type str
+COL_ESTADIO_AJCC = 'Estadiamento AJCC'  # type str
+COL_DIFERENCIACAO = 'Diferenciação'  # type str
+COL_GRAU_HISTOLOGICO = 'Grau Histológico'  # type int
+COL_ESTAGIO_DE_EXTENSAO = 'Estágio de Extensão'  # type str
+COL_TAMANHO_DO_TUMOR = 'Tamanho do Tumor'  # type int
+COL_ESTROGENIO_STATUS = 'Status Estrogênio'  # type str
+COL_PROGESTERONA_STATUS = 'Status Progesterona'  # type str
+COL_LINFONODOS_REGIONAIS_EXAMINADOS = 'Linfonodos Regionais Examinados'  # type int
+COL_LINFONODOS_REGIONAIS_POSITIVOS = 'Linfonodos Regionais Positivos'  # type int
+COL_MESES_DE_SOBREVIDA = 'Meses de Sobrevida'  # type int
 COL_STATUS = 'Status'  # type str
 
-COLUNAS = [COL_IDADE, COL_RACA, COL_ESTADO_CIVIL, COL_ESTAGIO_T, COL_ESTAGIO_N, COL_ESTADIO_AJCC, COL_DIFERENCIACAO,
-           COL_GRAU_HISTOLOGICO, COL_ESTAGIO_DE_EXTENSAO, COL_TAMANHO_DO_TUMOR, COL_ESTROGENIO_STATUS,
-           COL_PROGESTERONA_STATUS, COL_LINFONODOS_REGIONAIS_EXAMINADOS, COL_LINFONODOS_REGIONAIS_POSITIVOS,
-           COL_MESES_DE_SOBREVIDA, COL_STATUS]
+"""
+    O rename das colunas facilitará na leitura dos dados dos gráficos e entendimento de correlações, por isto é aplicado já no início do fluxo.
+"""
+dataset = dataset.rename(columns={
+    'Age': COL_IDADE,
+    'Race': COL_RACA,
+    'Marital Status': COL_ESTADO_CIVIL,
+    'T Stage ': COL_ESTAGIO_T,
+    'N Stage': COL_ESTAGIO_N,
+    '6th Stage': COL_ESTADIO_AJCC,
+    'differentiate': COL_DIFERENCIACAO,
+    'Grade': COL_GRAU_HISTOLOGICO,
+    'A Stage': COL_ESTAGIO_DE_EXTENSAO,
+    'Tumor Size': COL_TAMANHO_DO_TUMOR,
+    'Estrogen Status': COL_ESTROGENIO_STATUS,
+    'Progesterone Status': COL_PROGESTERONA_STATUS,
+    'Regional Node Examined': COL_LINFONODOS_REGIONAIS_EXAMINADOS,
+    'Reginol Node Positive': COL_LINFONODOS_REGIONAIS_POSITIVOS,
+    'Survival Months': COL_MESES_DE_SOBREVIDA,
+    'Status': COL_STATUS
+})
+
+COLUNAS = [COL_IDADE,
+           COL_RACA,
+           COL_ESTADO_CIVIL,
+           COL_ESTAGIO_T,
+           COL_ESTAGIO_N,
+           COL_ESTADIO_AJCC,
+           COL_DIFERENCIACAO,
+           COL_GRAU_HISTOLOGICO,
+           COL_ESTAGIO_DE_EXTENSAO,
+           COL_TAMANHO_DO_TUMOR,
+           COL_ESTROGENIO_STATUS,
+           COL_PROGESTERONA_STATUS,
+           COL_LINFONODOS_REGIONAIS_EXAMINADOS,
+           COL_LINFONODOS_REGIONAIS_POSITIVOS,
+           COL_MESES_DE_SOBREVIDA,
+           COL_STATUS]
 
 """
     A distinção entre colunas numéricas e string (str) é importante para as etapas de pré-processamento (transformação dos dados) 
@@ -109,11 +143,23 @@ COLUNAS = [COL_IDADE, COL_RACA, COL_ESTADO_CIVIL, COL_ESTAGIO_T, COL_ESTAGIO_N, 
     Neste processo de análise dos dados do dataset, além da inspeção visual em primeiro momento, também, temos a recuperação de
     outros dados que nos ajudam a compreender os tipos (info), grupo de dados (groupby) e quantidades (count).
 """
-COLUNAS_NUMERICAS = [COL_IDADE, COL_GRAU_HISTOLOGICO, COL_TAMANHO_DO_TUMOR, COL_LINFONODOS_REGIONAIS_EXAMINADOS,
-                     COL_LINFONODOS_REGIONAIS_POSITIVOS, COL_MESES_DE_SOBREVIDA]
+COLUNAS_NUMERICAS = [COL_IDADE,
+                     COL_GRAU_HISTOLOGICO,
+                     COL_TAMANHO_DO_TUMOR,
+                     COL_LINFONODOS_REGIONAIS_EXAMINADOS,
+                     COL_LINFONODOS_REGIONAIS_POSITIVOS,
+                     COL_MESES_DE_SOBREVIDA]
 
-COLUNAS_STRINGS = [COL_RACA, COL_ESTADO_CIVIL, COL_ESTAGIO_T, COL_ESTAGIO_N, COL_ESTADIO_AJCC, COL_DIFERENCIACAO,
-                   COL_ESTAGIO_DE_EXTENSAO, COL_ESTROGENIO_STATUS, COL_PROGESTERONA_STATUS, COL_STATUS]
+COLUNAS_STRINGS = [COL_RACA,
+                   COL_ESTADO_CIVIL,
+                   COL_ESTAGIO_T,
+                   COL_ESTAGIO_N,
+                   COL_ESTADIO_AJCC,
+                   COL_DIFERENCIACAO,
+                   COL_ESTAGIO_DE_EXTENSAO,
+                   COL_ESTROGENIO_STATUS,
+                   COL_PROGESTERONA_STATUS,
+                   COL_STATUS]
 
 """
    info: sumário das colunas, tipos de dados e contagem de valores não nulos
@@ -231,9 +277,11 @@ func.fprint(
     Quando de certa forma não somos especialistas nos dados tratados em um dataset procuramos estratégias como "find best"
     para parâmetros como n_neighbors_range, por exemplo. Esta estratégia tem a desvantagem de desprender maior custo
     computacional de processamento de dados.
+    
+    O que temos como retorno padrão é -1 para outliers e 1 para inliers, ou seja, pontos normais. Assim, conseguimos calcular
+    o percentual de outliers no dataset, o que nos ajuda a entender a proporção de dados que são considerados anômalos
+    em relação ao total de dados.
 """
-
-func.fprint(f"len(COLUNAS_NUMERICAS)={len(COLUNAS_NUMERICAS)}")
 lof_n_neighbors, lof_contamination = func.find_best_lof_parameters(X=dataset[COLUNAS_NUMERICAS],
                                                                    n_neighbors_range=range(3, len(COLUNAS_NUMERICAS)))
 func.fprint(f"LOF n neighbors: {lof_n_neighbors}, contamination: {lof_contamination}")
@@ -272,18 +320,35 @@ func.plot_distribution_grid(dataset, COLUNAS_STRINGS, plot_type='count')
 
 # --------------- BOXPLOT DAS COLUNAS ------------------------------------------------
 """
-    O boxplot é uma representação gráfica que mostra a distribuição de um conjunto de dados numéricos através de seus quartis, mediana e possíveis outliers. Ele é útil para identificar a presença de outliers, a simetria da distribuição e a dispersão dos dados.
+    Os gráficos do tipo boxplot é útil para identificar a presença de outliers, a simetria da distribuição e a dispersão
+    dos dados. Em um boxplot temos 5 medidas estatísticas:
+      - Mínimo -- a linha horizontal debaixo do retângulo.
+      - Primeiro quartil, Q1 -- a parte inferior do retângulo.
+      - Mediana, Q2 -- a linha dentro do retângulo.
+      - Terceiro quartil (acima da mediana e contém também a média), Q3 -- a parte superior do retângulo.
+      - Máximo -- a linha horizontal acima do retângulo.
 """
 func.plot_boxplot_outliers(dataset, COLUNAS_NUMERICAS)
 
 # --------------- HEATMAP DAS COLUNAS ------------------------------------------------
 """
-
+    Os gráficos do tipo mapa de calor (heatmap) conseguimos identificar correlações fortes e fracas entre as colunas.
+    Quanto mais próximo de 1 mais positiva é a correlação, quanto mais próximo de -1 mais negativa é a correlação, ou seja
+    é inversamente proporcional. Quando a variável encontra a si mesma o valor será igual a 1.
+    
+    No heatmap plotado podemos observar que a idade influência na sobrevida reduzida dos meses, relação negativa. Também,
+    Tumores maiores tendem a ter maior probabilidade de disseminação para os linfonodos, relação positiva. 
 """
 func.plot_correlation_heatmap(dataset, COLUNAS_NUMERICAS)
 
 # --------------- COLUMN TRANSFORMER -------------------------------------------------
 """
+    A fase de transformação das colunas presente no dataset é importante para preparar os dados para o treinamento do modelo.
+    Assim, como dividir o nosso dataset em conjunto de treino e teste, para avaliar o desempenho do modelo em dados não vistos
+    durante o treinamento.
+    
+    Neste momento temos que a nossa variável target(y) é o STATUS que indica se a paciente está viva ou morta. Então, usamos
+    todas as colunas, exceto STATUS, para prever se a paciente está viva ou morta.
 """
 X = dataset.drop(COL_STATUS, axis=1)
 y = dataset[COL_STATUS]
@@ -295,6 +360,10 @@ preprocessor = func.build_preprocessor(COLUNAS_STRINGS, COLUNAS_NUMERICAS, COL_S
 x_train = preprocessor.fit_transform(x_train, y_train)
 x_test = preprocessor.fit_transform(x_test, y_test)
 
+"""
+    Os modelos (algoritmos) entendem naturalmente números, então a string como "dead" ou "alive" não fará sentido.
+    Logo precisamos converter essas strings para representações numéricas números, por exemplo, "dead" para 0 e "alive" para 1.
+"""
 y_train = func.encode_labels(y_train)
 y_test = func.encode_labels(y_test)
 
@@ -308,6 +377,11 @@ y_test = func.encode_labels(y_test)
     O VotingClassifier é um meta-classificador que combina as previsões de vários classificadores base para melhorar a
     precisão geral. Ele pode usar votação "hard" (a classe mais votada é a previsão final) ou "soft" (as probabilidades
     previstas são somadas e a classe com a maior probabilidade é a previsão final).
+    
+    Como visto anteriormente o nosso dataset tem outliers em várias colunas, e quando analisado percebemos que muitos deles
+    fazem sentido, pois a amostragem possui certa adversidade. Logo, optei por não remover os outliers, mas sim usar
+    um modelo do tipo ensemble como o VotingClassifier que é mais robusto a outliers, pois combina as previsões de vários
+    modelos base.
 """
 
 voting_classifier = VotingClassifier(estimators=[
@@ -323,15 +397,15 @@ voting_classifier.named_estimators['svc'].probability = True
 voting_classifier.fit(x_train, y_train)
 
 for name, classifier in voting_classifier.named_estimators_.items():
-    print(f"train voting {name} score = {classifier.score(x_train, y_train):.4f}")
+    func.fprint(f"train voting {name} score = {classifier.score(x_train, y_train):.4f}")
 
 voting_classifier.fit(x_train, y_train)
-print(f"train voting all score = {voting_classifier.score(x_train, y_train):.4f}")
+func.fprint(f"train voting all score = {voting_classifier.score(x_train, y_train):.4f}")
 
 y_pred = voting_classifier.predict(x_test)
 
 voting_classifier_accuracy_score = accuracy_score(y_true=y_test, y_pred=y_pred)
-print(f"voting_classifier_accuracy_score: {voting_classifier_accuracy_score:.4f}")
+func.fprint(f"voting_classifier_accuracy_score: {voting_classifier_accuracy_score:.4f}")
 
 # --------------- END ----------------------------------------------------------------
 sys.exit(0)
