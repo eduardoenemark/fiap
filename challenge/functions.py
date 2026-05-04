@@ -8,7 +8,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, recall_score, f1_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
@@ -287,7 +287,7 @@ def get_svc(random_state=42):
 
 def get_decision_tree(random_state=42):
     """
-    Retorna uma instância de Decision Tree Classifier.
+    Retorna uma instância de Decision Tree Classifier regularizada para evitar overfitting.
 
     Args:
         random_state (int): Semente para reprodutibilidade.
@@ -295,21 +295,7 @@ def get_decision_tree(random_state=42):
     Returns:
         DecisionTreeClassifier: Uma instância de Árvore de Decisão.
     """
-    return DecisionTreeClassifier(random_state=random_state)
-
-
-def get_decision_tree(random_state=42):
-    """
-    Retorna uma instância de Decision Tree Classifier.
-    (Nota: Esta definição é uma duplicata da função anterior no código original).
-
-    Args:
-        random_state (int): Semente para reprodutibilidade.
-
-    Returns:
-        DecisionTreeClassifier: Uma instância de Árvore de Decisão.
-    """
-    return DecisionTreeClassifier(random_state=random_state)
+    return DecisionTreeClassifier(random_state=random_state, max_depth=6, min_samples_leaf=5, class_weight='balanced')
 
 
 def detect_outliers_lof(X, n_neighbors=20, contamination='auto'):
@@ -374,6 +360,94 @@ def map_in_and_outlier_labels(labels, column: str = 'in_and_outlier_labels') -> 
     """
     mapping = {1: 'inlier', -1: 'outlier'}
     return pd.DataFrame({column: pd.Series(labels).map(mapping)})
+
+
+def remove_outlier_rows(df, outlier_labels_df, column_name='in_and_outlier_labels'):
+    """
+    Remove as linhas do DataFrame principal que são identificadas como outliers.
+
+    Args:
+        df (pd.DataFrame): O dataset de entrada.
+        outlier_labels_df (pd.DataFrame): DataFrame contendo os rótulos de outliers (resultante de map_in_and_outlier_labels).
+        column_name (str): Nome da coluna que contém os rótulos 'inlier' ou 'outlier'.
+
+    Returns:
+        pd.DataFrame: O DataFrame limpo sem os outliers, com índice redefinido.
+    """
+    # Filtra apenas os índices onde o rótulo é 'outlier'
+    outlier_indices = outlier_labels_df[outlier_labels_df[column_name] == 'outlier'].index
+
+    # Remove essas linhas do dataset principal
+    cleaned_df = df.drop(outlier_indices)
+
+    # Reseta o índice para evitar buracos no índice do DataFrame
+    return cleaned_df.reset_index(drop=True)
+
+
+def balance_dataset(df, target_column):
+    """
+    Realiza o balanceamento de classes no dataset via undersampling (amostragem aleatória).
+    Mantém apenas a quantidade de amostras igual à classe minoritária.
+
+    Args:
+        df (pd.DataFrame): O dataset de entrada.
+        target_column (str): Nome da coluna alvo que deseja-se balancear.
+
+    Returns:
+        pd.DataFrame: Dataset balanceado com índice resetado.
+    """
+    # Encontra a menor quantidade de amostras entre as classes
+    min_count = df[target_column].value_counts().min()
+
+    # Amostra aleatoriamente (sample) o número de linhas igual à classe menor
+    # para cada classe única, e concatena os resultados.
+    balanced_df = pd.concat([
+        df[df[target_column] == cls].sample(n=min_count, random_state=RANDOM_STATE)
+        for cls in df[target_column].unique()
+    ])
+
+    # Reseta o índice para evitar "buracos" numéricos após a remoção
+    return balanced_df.reset_index(drop=True)
+
+
+def check_class_imbalance(df, column, threshold):
+    """
+    Verifica se o dataset apresenta desbalanceamento significativo na coluna especificada.
+
+    A lógica calcula o "grau de desbalanceamento" como 1 - (contagem_minoritaria / contagem_maioritaria).
+    - Se a coluna estiver perfeitamente balanceada, o resultado é 0.0.
+    - Se uma classe não existir, o resultado é 1.0.
+
+    Args:
+        df (pd.DataFrame): O dataset a ser verificado.
+        column (str): Nome da coluna alvo.
+        threshold (float): Limite de 0 a 1. O desbalanceamento será considerado positivo
+                           se o 'grau de assimetria' for maior ou igual a este valor.
+
+    Returns:
+        bool: True se o desbalanceamento for maior ou igual ao threshold, False caso contrário.
+    """
+    if column not in df.columns:
+        return False
+
+    # Obtém a contagem de cada classe
+    counts = df[column].value_counts()
+
+    # Garante que não haja divisão por zero
+    if len(counts) < 2 or counts.max() == 0:
+        return False
+
+    min_count = counts.min()
+    max_count = counts.max()
+
+    # Calcula a proporção de equilíbrio (1.0 = equilibrado, 0.0 = desequilibrado)
+    balance_ratio = min_count / max_count
+
+    # Calcula o grau de desbalanceamento (0.0 = equilibrado, 1.0 = desequilibrado)
+    imbalance_degree = 1.0 - balance_ratio
+
+    # Retorna True se o desbalanceamento encontrado for maior ou igual ao limite 'n' (threshold)
+    return imbalance_degree >= threshold
 
 
 def get_outlier_percentage(outliers):

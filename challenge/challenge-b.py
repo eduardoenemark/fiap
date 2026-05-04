@@ -3,7 +3,7 @@ import sys
 
 import pandas as pd
 from sklearn.ensemble import VotingClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
 from sklearn.model_selection import train_test_split
 
 import functions as func
@@ -28,10 +28,8 @@ import functions as func
     países analisados.
     IARC / OMS — GLOBOCAN 2022. Global Cancer Observatory. Disponível em: <https://gco.iarc.who.int>
 
-
     Descrição sobre o dataset utilizado neste trabalho:
     - O dataset é uma versão pré-processada do SEER Breast Cancer Dataset, disponível no Kaggle: https://www.kaggle.com/datasets/reihanenamdari/breast-cancer
-
     - Colunas e seus significados:
     ----------------------------------------------------------------------------------------------------------------------
     | Coluna no CSV | Significado (Português) | Domínio / Valores Possíveis | Observações Clínicas |
@@ -59,6 +57,11 @@ import functions as func
     3. **`Regiol Node Positive`**: O CSV original apresenta um erro de digitação (`Regiol` em vez de `Regional`). Não afeta a lógica, mas recomenda-se corrigir ao carregar os dados.
     4. **`Tumor Size`**: Verifique o dicionário oficial do SEER ou o arquivo `codebook` do Kaggle. Em versões mais recentes, o tamanho é reportado em **cm**; nesta versão específica, os valores sugerem **mm** ou uma gravação inconsistente.
     5. **Viés de exclusão**: Conforme a descrição, pacientes com tempo de vida < 1 mês, tamanho tumoral desconhecido, linfonodos não examinados ou positivos desconhecidos foram removidos. Isso pode enviesar a distribuição para estágios mais avançados ou melhor acompanhados.
+"""
+
+# --------------- OBJETIVO -----------------------------------------------------------
+"""
+    Neste breve introdutório sobre o câncer de mama e o dataset utilizado podemos treinar um modelo de dados para prever se um paciente está vivo ou morto com base nas características clínicas e patológicas presentes no dataset?
 """
 
 # --------------- LOAD DATASET -------------------------------------------------------
@@ -299,24 +302,47 @@ func.plot_distribution_grid(outliers_lof_labels,
                             plot_type='count',
                             suptitle=f"Distribuição de Outliers (LOF): {func.get_outlier_percentage(outliers_lof)}%")
 
+"""
+    A remoção dos outliers identificados pelo algoritmo LOF.
+    Utilizamos a função dedicada em functions.py para manter o código limpo.
+"""
+dataset = func.remove_outlier_rows(dataset, outliers_lof_labels)
+func.fprint(f"Total de linhas após remoção de outliers: {func.get_total_rows(dataset)}")
+
+# --------------- BALANCEAMENTO DO DATASET -------------------------------------------
+"""
+    A nossa variável target (y) é a coluna STATUS, então um primeiro balanceamento por ela é necessário para melhores resultados do modelo.
+    A outras variáveis do tipo string faremos um balanceamento caso o limite máximo, threshold, for igual ou maior que 50%, 0.5.
+"""
+balanced_dataset = func.balance_dataset(dataset, COL_STATUS)
+func.fprint(f"Distribuição balanceada pela coluna {COL_STATUS}: {balanced_dataset[COL_STATUS].value_counts().to_dict()}")
+
+threshold_n = 0.5
+for col in [col for col in COLUNAS_STRINGS if col != COL_STATUS]:
+    is_imbalanced = func.check_class_imbalance(balanced_dataset, COL_STATUS, threshold=threshold_n)
+    if is_imbalanced:
+        func.fprint(f"Coluna {col}(grau >= {threshold_n}). Realizando balanceamento...")
+        balanced_dataset = func.balance_dataset(balanced_dataset, col)
+
+assert func.get_total_rows(balanced_dataset) >= 200, "O dataset balanceado não pode ser inferior a 200"
 
 # --------------- HISTOGRAMA DAS COLUNAS ---------------------------------------------
 """
-    O histograma com um gráfico de barras que representa a distribuição de frequência de um conjunto de dados, nos ajuda a 
+    O histograma com um gráfico de barras que representa a distribuição de frequência de um conjunto de dados, nos ajuda a
     visualizar quantidades, como estão distribuídas e possíveis diferenças acentuadas.
-    
+
     A função plot_distribution_grid em plot_type do tipo hist (histograma) traz sobre o gráfico de barras o KDE (Kernel Density
-    Estimation) que é uma técnica estatística que cria uma curva que representa a distribuição de dados, mostra onde os dados 
+    Estimation) que é uma técnica estatística que cria uma curva que representa a distribuição de dados, mostra onde os dados
     estão mais concentrados.
 
     Quando temos colunas não numéricas fazemos o gráfico de contagem (count) que é um tipo de gráfico de barras que mostra a
     frequência de cada categoria em uma coluna categórica.
 """
 # colunas numéricas hist:
-func.plot_distribution_grid(dataset, COLUNAS_NUMERICAS, plot_type='hist')
+func.plot_distribution_grid(balanced_dataset, COLUNAS_NUMERICAS, plot_type='hist')
 
 # colunas string count:
-func.plot_distribution_grid(dataset, COLUNAS_STRINGS, plot_type='count')
+func.plot_distribution_grid(balanced_dataset, COLUNAS_STRINGS, plot_type='count')
 
 # --------------- BOXPLOT DAS COLUNAS ------------------------------------------------
 """
@@ -328,18 +354,18 @@ func.plot_distribution_grid(dataset, COLUNAS_STRINGS, plot_type='count')
       - Terceiro quartil (acima da mediana e contém também a média), Q3 -- a parte superior do retângulo.
       - Máximo -- a linha horizontal acima do retângulo.
 """
-func.plot_boxplot_outliers(dataset, COLUNAS_NUMERICAS)
+func.plot_boxplot_outliers(balanced_dataset, COLUNAS_NUMERICAS)
 
 # --------------- HEATMAP DAS COLUNAS ------------------------------------------------
 """
     Os gráficos do tipo mapa de calor (heatmap) conseguimos identificar correlações fortes e fracas entre as colunas.
     Quanto mais próximo de 1 mais positiva é a correlação, quanto mais próximo de -1 mais negativa é a correlação, ou seja
     é inversamente proporcional. Quando a variável encontra a si mesma o valor será igual a 1.
-    
+
     No heatmap plotado podemos observar que a idade influência na sobrevida reduzida dos meses, relação negativa. Também,
-    Tumores maiores tendem a ter maior probabilidade de disseminação para os linfonodos, relação positiva. 
+    Tumores maiores tendem a ter maior probabilidade de disseminação para os linfonodos, relação positiva.
 """
-func.plot_correlation_heatmap(dataset, COLUNAS_NUMERICAS)
+func.plot_correlation_heatmap(balanced_dataset, COLUNAS_NUMERICAS)
 
 # --------------- COLUMN TRANSFORMER -------------------------------------------------
 """
@@ -350,8 +376,8 @@ func.plot_correlation_heatmap(dataset, COLUNAS_NUMERICAS)
     Neste momento temos que a nossa variável target(y) é o STATUS que indica se a paciente está viva ou morta. Então, usamos
     todas as colunas, exceto STATUS, para prever se a paciente está viva ou morta.
 """
-X = dataset.drop(COL_STATUS, axis=1)
-y = dataset[COL_STATUS]
+X = balanced_dataset.drop(COL_STATUS, axis=1)
+y = balanced_dataset[COL_STATUS]
 
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=func.RANDOM_STATE, stratify=y)
 
@@ -367,7 +393,7 @@ x_test = preprocessor.fit_transform(x_test, y_test)
 y_train = func.encode_labels(y_train)
 y_test = func.encode_labels(y_test)
 
-# --------------- TRAIN E TESTS ------------------------------------------------------
+# --------------- TREINO E TESTES ----------------------------------------------------
 """
     Suponha que você faça uma pergunta complexa a milhares de pessoas aleatórias e, em seguida, agregue as respostas delas.
     Em muitos casos, você descobrirá que essa resposta agregada é melhor do que a resposta de um especialista.
@@ -383,7 +409,6 @@ y_test = func.encode_labels(y_test)
     um modelo do tipo ensemble como o VotingClassifier que é mais robusto a outliers, pois combina as previsões de vários
     modelos base.
 """
-
 voting_classifier = VotingClassifier(estimators=[
     ('logistic_regression', func.get_logistic_regression()),
     ('random_forest', func.get_random_forest()),
@@ -391,7 +416,8 @@ voting_classifier = VotingClassifier(estimators=[
     ('knn', func.get_best_knn_classifier(x_train, y_train, x_test, y_test)),
     ('decision_tree', func.get_decision_tree()),
     ('linear_svc', func.get_linear_svc_for_voting())],
-    voting='soft')
+    voting='soft',
+    n_jobs=-1)
 voting_classifier.named_estimators['svc'].probability = True
 
 voting_classifier.fit(x_train, y_train)
@@ -404,8 +430,39 @@ func.fprint(f"train voting all score = {voting_classifier.score(x_train, y_train
 
 y_pred = voting_classifier.predict(x_test)
 
-voting_classifier_accuracy_score = accuracy_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"voting_classifier_accuracy_score: {voting_classifier_accuracy_score:.4f}")
+# --------------- METRICAS -----------------------------------------------------------
+"""
+    Depois de todo o trabalho realizado neste fluxo, agora temos a etapa de avaliação do modelo se está minimamente "bom".
+    Caso não esteja é importante que revisemos as etapas anteriores afim de promover os ajustes necessários.
+    
+    Temos 4 métricas que podemos resumir em perguntas onde a resposta é um percentual:
+    - Accuracy: De todas as previsões feitas, quantas estavam corretas?
+    - Recall: De todos os pontos de dados que deveriam ser previstos como positivos, quantos previmos corretamente?
+    - Precision: De todas as previsões positivas feitas, quantas estavam realmente corretas?
+    - F1 Score: Qual é a média harmônica entre precisão e recall, refletindo o equilíbrio do modelo entre identificar
+                corretamente os positivos e evitar falsos alarmes?
+    
+    Enquanto as três primeiras métricas avaliam aspectos isolados (desempenho geral, cobertura ou qualidade das previsões
+    positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
+"""
+accuracy_score = accuracy_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"accuracy score: {accuracy_score:.4f}")
+
+recall_score = recall_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"recall score: {recall_score:.4f}")
+
+f1_score = f1_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"f1 score: {f1_score:.4f}")
+
+precision_score = precision_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"precision score: {f1_score:.4f}")
+
+# --------------- VALIDACAO ----------------------------------------------------------
+"""
+"""
+
+
+
 
 # --------------- END ----------------------------------------------------------------
 sys.exit(0)
