@@ -1,0 +1,12 @@
+services:
+  fiap-challenge-fase1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CREATED_DATETIME: "${CREATED_DATETIME:-}"
+    image: fiap-challenge-fase1-9iadt-rm370509:1.0
+    container_name: fiap-challenge-fase1
+    environment:
+      - MPLBACKEND=Agg
+    restart: "no"
