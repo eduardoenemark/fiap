@@ -66,7 +66,7 @@ import functions as func
 
 # --------------- LOAD DATASET -------------------------------------------------------
 
-dataset = pd.read_csv("../kaggle/datasets/reihanenamdari/breast-cancer/versions/1/Breast_Cancer.csv")
+dataset = pd.read_csv("kaggle/datasets/reihanenamdari/breast-cancer/versions/1/Breast_Cancer.csv")
 dataset_initial_rows = func.get_total_rows(dataset)
 func.fprint(f"dataset inicial rows: {dataset_initial_rows}")
 
