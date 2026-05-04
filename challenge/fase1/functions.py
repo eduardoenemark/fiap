@@ -494,6 +494,27 @@ def diff_dataframe(df_a, df_b):
     return diff_df.reset_index(drop=True)
 
 
+def get_percentage_df(df, percentage):
+    """
+    Retorna um DataFrame resultante da amostragem aleatória de x porcento das linhas.
+
+    Args:
+        df (pd.DataFrame): O dataset de entrada.
+        percentage (float): A porcentagem a ser amostrada (0.07 a 1).
+
+    Returns:
+        pd.DataFrame: O dataset amostrado em ordem não ordenada.
+    """
+    if not 0.07 <= percentage <= 1.0:
+        raise ValueError("A porcentagem deve estar entre 0.07 e 1.0")
+
+    if df.empty:
+        return pd.DataFrame()
+
+    # O metodo sample com frac= realiza a amostragem e embaralha os dados por padrao
+    return df.sample(frac=percentage, random_state=RANDOM_STATE)
+
+
 def transform_dataframe(df, preprocessor):
     """
     Aplica o pré-processador (fitted) ao DataFrame e retorna um array numpy.

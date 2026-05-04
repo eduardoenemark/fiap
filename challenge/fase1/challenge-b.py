@@ -482,14 +482,15 @@ assert is_model_valid, "O modelo NÃO atingiu os critérios mínimos esperados. 
 func.fprint("Validação: O modelo está dentro dos critérios aceitáveis!")
 
 """
-    Um última rodada de validação vamos usar uma amostra dos registros que foram removidas anteriormente durante o processo de
-    balanceamento para a realização de nova predições. Na intenção de simplificar esta parte final usaremos apenas a métrica
-    de acurácia.
+    Uma última rodada para validação vamos usar uma amostra (10%) dos registros que foram removidas anteriormente durante o 
+    processo de balanceamento para a realização de novas predições. Na intenção de simplificar esta parte final usaremos
+    apenas a métrica de acurácia.
 """
-diff = func.diff_dataframe(dataset, balanced_dataset)
+diff_dataset = func.diff_dataframe(dataset, balanced_dataset)
+diff_random_dataset = func.get_percentage_df(diff_dataset, 0.10)
 
-X_val = diff.drop(COL_STATUS, axis=1)
-y_val = func.encode_labels(diff[COL_STATUS])
+X_val = diff_random_dataset.drop(COL_STATUS, axis=1)
+y_val = func.encode_labels(diff_random_dataset[COL_STATUS])
 x_val_prec = preprocessor.fit_transform(X_val, y_val)
 
 y_val_pred = voting_classifier.predict(x_val_prec)
