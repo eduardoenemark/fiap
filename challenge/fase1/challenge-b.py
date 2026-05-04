@@ -18,8 +18,8 @@ import functions as func
     - Sinta-se livre para copiar ou modificar.
 """
 
-# --------------- ABOUT --------------------------------------------------------------
 """
+# --------------- ABOUT ------------------------------------------------------------------------------------------------
     O câncer de mama é, atualmente, uma das maiores ameaças à saúde pública mundial e a principal causa de morte por câncer
     entre as mulheres em praticamente todos os países. De acordo com os dados do GLOBOCAN 2022, da Agência Internacional de
     Pesquisa em Câncer (IARC/OMS), foram registrados no mundo 2.296.840 novos casos da doença e 666.103 óbitos em apenas um
@@ -59,27 +59,30 @@ import functions as func
     5. **Viés de exclusão**: Conforme a descrição, pacientes com tempo de vida < 1 mês, tamanho tumoral desconhecido, linfonodos não examinados ou positivos desconhecidos foram removidos. Isso pode enviesar a distribuição para estágios mais avançados ou melhor acompanhados.
 """
 
-# --------------- OBJETIVO -----------------------------------------------------------
 """
-    Neste breve introdutório sobre o câncer de mama e o dataset utilizado podemos treinar um modelo de dados para prever se um paciente está vivo ou morto com base nas características clínicas e patológicas presentes no dataset?
+# --------------- OBJETIVO ---------------------------------------------------------------------------------------------
+    Neste breve introdutório sobre o câncer de mama e o dataset utilizado podemos treinar um modelo de dados para prever
+    se um paciente está vivo ou morto com base nas características clínicas e patológicas presentes no dataset?
 """
 
-# --------------- LOAD DATASET -------------------------------------------------------
+"""
+# --------------- LOAD DATASET -----------------------------------------------------------------------------------------
+"""
 
 dataset = pd.read_csv("kaggle/datasets/reihanenamdari/breast-cancer/versions/1/Breast_Cancer.csv")
 dataset_initial_rows = func.get_total_rows(dataset)
 func.fprint(f"dataset inicial rows: {dataset_initial_rows}")
 
-# --------------- VERIFICACAO DE VALORES NULOS OU VAZIOS -----------------------------
 """
+# --------------- VERIFICACAO DE VALORES NULOS OU VAZIOS ---------------------------------------------------------------
     A verificação de valores nulos ou vazios é importante para garantir a qualidade dos dados antes de realizar análises
     ou o treinamento do modelo.
 """
 assert (dataset.empty == False)
 assert (dataset.isnull().sum() == 0).all()
 
-# --------------- COLUNAS DO DATASET -------------------------------------------------
 """
+# --------------- COLUNAS DO DATASET -----------------------------------------------------------------------------------
     O mapeamento do nome das colunas do CSV para variáveis é feito para facilitar a leitura e manutenção do código, além de evitar erros de digitação.
     As colunas são categorizadas em numéricas e string para facilitar as etapas de pré-processamento e análise.
 """
@@ -181,8 +184,8 @@ func.fprint(f"describe:\n{dataset[COL_IDADE].describe()}")
 """
 func.fprint(dataset.groupby(COL_RACA).count())
 
-# --------------- DOMINIO DE VALORES -------------------------------------------------
 """
+# --------------- DOMINIO DE VALORES -----------------------------------------------------------------------------------
     Realizado análise de todos os possíveis valores de domínio. Os valores string (literais) são colocados em lowercase
     para garantir consistência, enquanto os numéricos são validados dentro de intervalos possíveis.
 """
@@ -205,8 +208,8 @@ LINFONODOS_REGIONAIS_EXAMINADOS_RANGE = (1, 61)
 LINFONODOS_REGIONAIS_POSITIVOS_RANGE = (1, 46)
 MESES_DE_SOBREVIDA_RANGE = (0, 720)
 
-# --------------- TRANSFORMACAO BASICA DOS DADOS E VALIDACAO -------------------------
 """
+# --------------- TRANSFORMACAO BASICA DOS DADOS E VALIDACAO -----------------------------------------------------------
     A transformação básica dos dados inclui a padronização de strings (lowercase e strip) e a conversão de colunas
     numéricas para o tipo numérico, tratando erros como NaN. Caso uma linha apresente erro então é removida do dataset.
 """
@@ -271,8 +274,8 @@ if sum_duplicated_lines > 0:
 func.fprint(
     f"Total de linhas removidas apos as transformacoes e validacoes do dataset {dataset_initial_rows - func.get_total_rows(dataset)}")
 
-# --------------- DETECÇÃO DE OUTLIERS -----------------------------------------------
 """
+# --------------- DETECÇÃO DE OUTLIERS ---------------------------------------------------------------------------------
     A detecção de outliers pode ser realizada utilizando o método Local Outlier Factor (LOF), que é um algoritmo de
     detecção de anomalias baseado em densidade. Ele identifica pontos que estão em regiões de baixa densidade em
     comparação com seus vizinhos, o que pode indicar que são outliers.
@@ -309,8 +312,8 @@ func.plot_distribution_grid(outliers_lof_labels,
 dataset = func.remove_outlier_rows(dataset, outliers_lof_labels)
 func.fprint(f"Total de linhas após remoção de outliers: {func.get_total_rows(dataset)}")
 
-# --------------- BALANCEAMENTO DO DATASET -------------------------------------------
 """
+# --------------- BALANCEAMENTO DO DATASET -----------------------------------------------------------------------------
     A nossa variável target (y) é a coluna STATUS, então um primeiro balanceamento por ela é necessário para melhores resultados do modelo.
     A outras variáveis do tipo string faremos um balanceamento caso o limite máximo, threshold, for igual ou maior que 50%, 0.5.
 """
@@ -326,8 +329,8 @@ for col in [col for col in COLUNAS_STRINGS if col != COL_STATUS]:
 
 assert func.get_total_rows(balanced_dataset) >= 200, "O dataset balanceado não pode ser inferior a 200"
 
-# --------------- HISTOGRAMA DAS COLUNAS ---------------------------------------------
 """
+# --------------- HISTOGRAMA DAS COLUNAS -------------------------------------------------------------------------------
     O histograma com um gráfico de barras que representa a distribuição de frequência de um conjunto de dados, nos ajuda a
     visualizar quantidades, como estão distribuídas e possíveis diferenças acentuadas.
 
@@ -344,8 +347,8 @@ func.plot_distribution_grid(balanced_dataset, COLUNAS_NUMERICAS, plot_type='hist
 # colunas string count:
 func.plot_distribution_grid(balanced_dataset, COLUNAS_STRINGS, plot_type='count')
 
-# --------------- BOXPLOT DAS COLUNAS ------------------------------------------------
 """
+# --------------- BOXPLOT DAS COLUNAS ----------------------------------------------------------------------------------
     Os gráficos do tipo boxplot é útil para identificar a presença de outliers, a simetria da distribuição e a dispersão
     dos dados. Em um boxplot temos 5 medidas estatísticas:
       - Mínimo -- a linha horizontal debaixo do retângulo.
@@ -356,8 +359,8 @@ func.plot_distribution_grid(balanced_dataset, COLUNAS_STRINGS, plot_type='count'
 """
 func.plot_boxplot_outliers(balanced_dataset, COLUNAS_NUMERICAS)
 
-# --------------- HEATMAP DAS COLUNAS ------------------------------------------------
 """
+# --------------- HEATMAP DAS COLUNAS ----------------------------------------------------------------------------------
     Os gráficos do tipo mapa de calor (heatmap) conseguimos identificar correlações fortes e fracas entre as colunas.
     Quanto mais próximo de 1 mais positiva é a correlação, quanto mais próximo de -1 mais negativa é a correlação, ou seja
     é inversamente proporcional. Quando a variável encontra a si mesma o valor será igual a 1.
@@ -367,8 +370,8 @@ func.plot_boxplot_outliers(balanced_dataset, COLUNAS_NUMERICAS)
 """
 func.plot_correlation_heatmap(balanced_dataset, COLUNAS_NUMERICAS)
 
-# --------------- COLUMN TRANSFORMER -------------------------------------------------
 """
+# --------------- COLUMN TRANSFORMER -----------------------------------------------------------------------------------
     A fase de transformação das colunas presente no dataset é importante para preparar os dados para o treinamento do modelo.
     Assim, como dividir o nosso dataset em conjunto de treino e teste, para avaliar o desempenho do modelo em dados não vistos
     durante o treinamento.
@@ -393,8 +396,8 @@ x_test = preprocessor.fit_transform(x_test, y_test)
 y_train = func.encode_labels(y_train)
 y_test = func.encode_labels(y_test)
 
-# --------------- TREINO E TESTES ----------------------------------------------------
 """
+# --------------- TREINO E TESTES --------------------------------------------------------------------------------------
     Suponha que você faça uma pergunta complexa a milhares de pessoas aleatórias e, em seguida, agregue as respostas delas.
     Em muitos casos, você descobrirá que essa resposta agregada é melhor do que a resposta de um especialista.
     Isso é chamado de sabedoria popular.
@@ -430,8 +433,8 @@ func.fprint(f"train voting all score = {voting_classifier.score(x_train, y_train
 
 y_pred = voting_classifier.predict(x_test)
 
-# --------------- METRICAS -----------------------------------------------------------
 """
+# --------------- METRICAS ---------------------------------------------------------------------------------------------
     Depois de todo o trabalho realizado neste fluxo, agora temos a etapa de avaliação do modelo se está minimamente "bom".
     Caso não esteja é importante que revisemos as etapas anteriores afim de promover os ajustes necessários.
     
@@ -445,24 +448,54 @@ y_pred = voting_classifier.predict(x_test)
     Enquanto as três primeiras métricas avaliam aspectos isolados (desempenho geral, cobertura ou qualidade das previsões
     positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
 """
-accuracy_score = accuracy_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"accuracy score: {accuracy_score:.4f}")
+accuracy_score_result = accuracy_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"accuracy score result: {accuracy_score_result:.4f}")
 
-recall_score = recall_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"recall score: {recall_score:.4f}")
+recall_score_result = recall_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"recall score result: {recall_score_result:.4f}")
 
-f1_score = f1_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"f1 score: {f1_score:.4f}")
+f1_score_result = f1_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"f1 score result: {f1_score_result:.4f}")
 
-precision_score = precision_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"precision score: {f1_score:.4f}")
+precision_score_result = precision_score(y_true=y_test, y_pred=y_pred)
+func.fprint(f"precision score result: {precision_score_result:.4f}")
 
-# --------------- VALIDACAO ----------------------------------------------------------
 """
+# --------------- VALIDACAO --------------------------------------------------------------------------------------------
+    A nossa última parte do fluxo: a validação. Vamos conferi os resultados da métricas calculadas, tomando uma "linha de base"
+    de thresholds (limiares) na faixa de 0.75 a 0.80. Como se trata de um exercício escolar não precisamos ser tão rigorosos,
+    mas em um ambiente de produção é importante que tenhamos limiares mais altos.
 """
+ACCEPTABLE_ACCURACY = 0.80
+ACCEPTABLE_RECALL = 0.75
+ACCEPTABLE_F1 = 0.75
+ACCEPTABLE_PRECISION = 0.75
 
+is_model_valid = (
+    accuracy_score_result >= ACCEPTABLE_ACCURACY and
+    recall_score_result >= ACCEPTABLE_RECALL and
+    f1_score_result >= ACCEPTABLE_F1 and
+    precision_score_result >= ACCEPTABLE_PRECISION
+)
 
+assert is_model_valid, "O modelo NÃO atingiu os critérios mínimos esperados. Revise os hiperparâmetros ou o pré-processamento."
+func.fprint("Validação: O modelo está dentro dos critérios aceitáveis!")
 
+"""
+    Um última rodada de validação vamos usar uma amostra dos registros que foram removidas anteriormente durante o processo de
+    balanceamento para a realização de nova predições. Na intenção de simplificar esta parte final usaremos apenas a métrica
+    de acurácia.
+"""
+diff = func.diff_dataframe(dataset, balanced_dataset)
+
+X_val = diff.drop(COL_STATUS, axis=1)
+y_val = func.encode_labels(diff[COL_STATUS])
+x_val_prec = preprocessor.fit_transform(X_val, y_val)
+
+y_val_pred = voting_classifier.predict(x_val_prec)
+
+accuracy_score_result = accuracy_score(y_true=y_val, y_pred=y_val_pred)
+func.fprint(f"Validacao accuracy score result: {accuracy_score_result:.4f}")
 
 # --------------- END ----------------------------------------------------------------
 sys.exit(0)

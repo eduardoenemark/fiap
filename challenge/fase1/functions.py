@@ -466,6 +466,50 @@ def get_outlier_percentage(outliers):
     return round(percentage, 4)
 
 
+def diff_dataframe(df_a, df_b):
+    """
+    Devolve um DataFrame resultante da diferença de dataframe A menos dataframe B.
+    Útil para validar quais linhas foram removidas em processos de balanceamento ou limpeza.
+
+    Args:
+        df_a (pd.DataFrame): DataFrame 'minuendo' (original).
+        df_b (pd.DataFrame): DataFrame 'subtraendo' (processado/balanceado).
+
+    Returns:
+        pd.DataFrame: DataFrame com as linhas que estão em A mas não em B.
+    """
+    # Identifica colunas comuns para merge
+    cols_comuns = [col for col in df_a.columns if col in df_b.columns]
+
+    if not cols_comuns:
+        return pd.DataFrame()
+
+    # Realiza merge à esquerda para identificar linhas únicas de A
+    merged_df = pd.merge(df_a, df_b, on=cols_comuns, how='left', indicator=True)
+
+    # Filtra apenas as linhas presentes em A ('left_only')
+    diff_df = merged_df[merged_df['_merge'] == 'left_only'].drop(columns=['_merge'])
+
+    # Reseta o índice
+    return diff_df.reset_index(drop=True)
+
+
+def transform_dataframe(df, preprocessor):
+    """
+    Aplica o pré-processador (fitted) ao DataFrame e retorna um array numpy.
+    Essencial para garantir que dados de validação/teste tenham a mesma estrutura
+    de features esperada pelo modelo treinado.
+
+    Args:
+        df (pd.DataFrame): O DataFrame bruto a ser transformado.
+        preprocessor: O objeto ColumnTransformer ou Pipeline já ajustado.
+
+    Returns:
+        np.ndarray: Dados transformados.
+    """
+    return preprocessor.transform(df)
+
+
 def plot_correlation_heatmap(df, columns=None, figsize=(10, 8)):
     """
     Gera um mapa de calor (heatmap) da correlação entre colunas numéricas.
