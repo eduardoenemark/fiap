@@ -8,7 +8,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
@@ -608,3 +608,21 @@ def encode_labels(y):
     encoder = LabelEncoder()
     y_encoded = encoder.fit_transform(y)
     return y_encoded
+
+
+def calculate_and_print_metrics(y_true, y_pred, label="Model"):
+    """
+    Calcula, imprime e retorna as métricas de avaliação.
+    """
+    acc = accuracy_score(y_true, y_pred)
+    rec = recall_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred)
+    prec = precision_score(y_true, y_pred)
+
+    fprint(f"{label}")
+    print(f"Acurácia: {acc:.4f}")
+    print(f"Recall: {rec:.4f}")
+    print(f"F1-Score: {f1:.4f}")
+    print(f"Precision: {prec:.4f}")
+
+    return acc, rec, f1, prec

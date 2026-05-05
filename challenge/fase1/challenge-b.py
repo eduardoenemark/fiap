@@ -5,7 +5,7 @@ print(
 
 import pandas as pd
 from sklearn.ensemble import VotingClassifier
-from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
 import functions as func
@@ -473,10 +473,9 @@ print(
     precisão geral. Ele pode usar votação "hard" (a classe mais votada é a previsão final) ou "soft" (as probabilidades
     previstas são somadas e a classe com a maior probabilidade é a previsão final).
     
-    Como visto anteriormente o nosso dataset tem outliers em várias colunas, e quando analisado percebemos que muitos
-    deles fazem sentido, pois a amostragem possui certa adversidade. Logo, optei por não remover os outliers, mas sim
-    usar um modelo do tipo ensemble como o VotingClassifier que é mais robusto a outliers, pois combina as previsões de
-    vários modelos base.
+    Como visto anteriormente o nosso dataset tem outliers em várias colunas, pois a amostragem possui certa adversidade.
+    Logo, optei por não remover os outliers, mas sim usar um modelo do tipo ensemble como o VotingClassifier que é mais
+    robusto a outliers, pois combina as previsões de vários modelos base.
 """)
 voting_classifier = VotingClassifier(estimators=[
     ('logistic_regression', func.get_logistic_regression()),
@@ -515,17 +514,8 @@ print(
     Enquanto as três primeiras métricas avaliam aspectos isolados (desempenho geral, cobertura ou qualidade das
     previsões positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
 """)
-accuracy_score_result = accuracy_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"Accuracy score result: {accuracy_score_result:.4f}")
-
-recall_score_result = recall_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"Recall score result: {recall_score_result:.4f}")
-
-f1_score_result = f1_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"F1 score result: {f1_score_result:.4f}")
-
-precision_score_result = precision_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"Precision score result: {precision_score_result:.4f}")
+accuracy_score_result, recall_score_result, f1_score_result, precision_score_result = func.calculate_and_print_metrics(
+    y_test, y_pred, "Avaliação do Modelo")
 
 print(
 """
