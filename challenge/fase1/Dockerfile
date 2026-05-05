@@ -44,5 +44,5 @@ VOLUME ["/app/output"]
 # Executa o script principal
 CMD ["/bin/bash","-c", \
     "p2j -o challenge-b.py && \
-     cp -v challenge-b.ipynb /app/output/challenge-b.ipynb && \
+     cp -v challenge-b.ipynb functions.py /app/output/ && \
      jupyter nbconvert --execute challenge-b.ipynb --to html --output /app/output/challenge-b.html"]
