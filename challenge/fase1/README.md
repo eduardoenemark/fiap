@@ -32,6 +32,7 @@ docker compose up
 
 **Via CLI direto (Docker ou Podman):**
 ```bash
+mkdir ./output
 docker run --rm -v ${PWD}/output:/app/output fiap-challenge-fase1-9iadt-rm370509:1.0
 ```
 
