@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
     && pip install --no-cache-dir -r requirements.txt
 
 RUN p2j -o challenge-b.py \
+    && mkdir -p /app/output \
     && cp challenge-b.ipynb /app/output/challenge-b.ipynb \
     && jupyter nbconvert --execute challenge-b.ipynb --to html --output /app/output/challenge-b.html
 
