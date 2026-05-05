@@ -564,15 +564,6 @@ y_val_pred = voting_classifier.predict(x_val_prec)
 accuracy_score_result = accuracy_score(y_true=y_val, y_pred=y_val_pred)
 func.fprint(f"Validacao Accuracy score result: {accuracy_score_result:.4f}")
 
-recall_score_result = recall_score(y_true=y_val, y_pred=y_val_pred)
-func.fprint(f"Validacao Recall score result: {recall_score_result:.4f}")
-
-f1_score_result = f1_score(y_true=y_val, y_pred=y_val_pred)
-func.fprint(f"Validacao F1 score result: {f1_score_result:.4f}")
-
-precision_score_result = precision_score(y_true=y_val, y_pred=y_val_pred)
-func.fprint(f"Validacao Precision score result: {precision_score_result:.4f}")
-
 print(
 """
 # --------------- ENCERRADO O FLUXO ------------------------------------------------------------------------------------
