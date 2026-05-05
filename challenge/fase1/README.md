@@ -1,48 +1,55 @@
-## FIAP Challenge Fase 1 — Pós Tech 9IADT
+# FIAP Challenge Fase 1 — Pós Tech 9IADT
 
-### Sobre
+## Sobre o Projeto
 
-O câncer de mama é uma das maiores ameaças à saúde pública mundial e a principal causa de morte por câncer entre as mulheres em praticamente todos os países. De acordo com os dados do GLOBOCAN 2022, foram registrados **2.296.840 novos casos** e **666.103 óbitos** em apenas um ano — representando aproximadamente **1 em cada 4 novos diagnósticos de câncer no mundo**.
+Este projeto desenvolve um modelo de Machine Learning para prever o status vital (vivo ou morto) de pacientes com câncer de mama, utilizando características clínicas e patológicas do SEER Breast Cancer Dataset. O câncer de mama é uma das maiores ameaças à saúde pública mundial, correspondendo a aproximadamente 1 em cada 4 novos diagnósticos de câncer no ano.
 
-Este projeto treina um modelo de machine learning para **prever se uma paciente está viva ou morta** com base em características clínicas e patológicas do [SEER Breast Cancer Dataset](https://www.kaggle.com/datasets/reihanenamdari/breast-cancer), disponível no Kaggle.
+## Dataset
 
-O fluxo cobre: carregamento e validação dos dados, pré-processamento, detecção de outliers (LOF), balanceamento, análise exploratória (histogramas, boxplots, heatmap) e treinamento de um ensemble `VotingClassifier` com Logistic Regression, Random Forest, SVC, KNN, Decision Tree e Linear SVC.
+O modelo foi treinado e validado com uma versão pré-processada do [SEER Breast Cancer Dataset](https://www.kaggle.com/datasets/reihanenamdari/breast-cancer). 
+- **Variável Alvo:** `STATUS` (Alive / Dead).
+- **Features:** Incluem Idade, Raça, Estadiamento TNM (T Stage, N Stage), Grau de Diferenciação, Tamanho do Tumor, Receptores de Estrogênio/Progesterona, entre outras.
+- **Observações Técnicas:** O arquivo original contém um erro de digitação na coluna `Regiol Node Positive` e o tamanho do tumor pode variar entre milímetros e centímetros dependendo da extração. Pacientes com tempo de sobrevida inferior a 1 mês ou dados críticos faltantes foram removidos, o que pode introduzir viés para casos mais avançados.
 
----
-
-### Pré-requisitos
-
-- [Docker](https://docs.docker.com/get-docker/) **ou** [Podman](https://podman.io/getting-started/installation)
+## Pré-requisitos
+- [Docker](https://docs.docker.com/get-docker/) ou [Podman](https://podman.io/getting-started/installation)
 - Dataset disponível localmente em: `kaggle/datasets/reihanenamdari/breast-cancer/versions/1/Breast_Cancer.csv`
 
----
+## Instalação & Construção
 
-### 1. Construção da Imagem
+O projeto oferece scripts automatizados (`build-image.sh` para Linux/macOS e `build-image.cmd` para Windows) que detectam e utilizam automaticamente o Docker ou Podman instalado. Durante o build, a imagem é gerada com a tag `fiap-challenge-fase1-9iadt-rm370509:1.0`. O `Dockerfile` configura variáveis de ambiente essenciais, como `MPLBACKEND=Agg`, para garantir o funcionamento correto do matplotlib em ambientes headless.
 
-**Linux / macOS:**
-```bash
-./build-image.sh
-```
+> *Os scripts detectam automaticamente se `docker` ou `podman` está disponível e utilizam o primeiro encontrado.*
 
-**Windows:**
-```cmd
-build-image.cmd
-```
+## Execução
 
-> Os scripts detectam automaticamente se `docker` ou `podman` está disponível e utilizam o primeiro encontrado.
+A aplicação é executada em ambiente containerizado. Você pode rodá-la de duas formas:
 
----
-
-### 2. Execução
-
-**Via Docker Compose (recomendado):**
+**Via Docker Compose (Recomendado):**
 ```bash
 docker compose up
 ```
 
-**Via Docker / Podman diretamente:**
+**Via CLI direto (Docker ou Podman):**
 ```bash
 docker run --rm fiap-challenge-fase1-9iadt-rm370509:1.0
 ```
 
-> O dataset já é copiado para dentro da imagem durante o build (`COPY kaggle/ ./kaggle/`), portanto não é necessário montar volumes.
+> **Nota:** O dataset já é copiado para o interior da imagem durante o processo de build, portanto, não é necessário montar volumes externos.
+
+## Metodologia & Pipeline
+
+O fluxo de trabalho segue as etapas padrão de ciência de dados, garantindo reprodutibilidade e robustez:
+1. **Pré-processamento:** Separação estratificada dos dados em treino (80%) e teste (20%), utilizando `RANDOM_STATE = 42` para garantir reprodutibilidade. Colunas categóricas são convertidas para representações numéricas adequadas aos algoritmos.
+2. **Tratamento de Dados:** Detecção de outliers utilizando o algoritmo Local Outlier Factor (LOF) e balanceamento da classe alvo para corrigir assimetrias na distribuição.
+3. **Modelagem:** Implementação de um `VotingClassifier` com estratégia de votação `"soft"`, combinando seis modelos base: Logistic Regression, Random Forest, SVC, KNN, Decision Tree e Linear SVC (calibrado via `CalibratedClassifierCV`).
+4. **Avaliação:** O desempenho do modelo é monitorado por métricas clássicas de classificação, assegurando uma análise equilibrada entre cobertura e precisão das previsões.
+
+##  Dependências
+
+As bibliotecas do ambiente Python são gerenciadas via `requirements.txt`, incluindo `scikit-learn`, `pandas`, `numpy`, `matplotlib` e `seaborn`.
+
+##  Licença & Autoria
+- 
+- **Licença:** GPL-3.0
+- **Autor:** Eduardo Vieira
