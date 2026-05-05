@@ -14,6 +14,7 @@ print(
     - Isto é apenas uma prática de um exercício (desafio) de machine learning. Logo não tem nenhuma pretensão de ser
       usada em ambiente de produção.
     - Sinta-se livre para copiar ou modificar.
+    - GITHUB: https://github.com/eduardoenemark/fiap/tree/main/challenge/fase1
 """)
 
 print(
@@ -511,16 +512,16 @@ print(
     previsões positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
 """)
 accuracy_score_result = accuracy_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"accuracy score result: {accuracy_score_result:.4f}")
+func.fprint(f"Accuracy score result: {accuracy_score_result:.4f}")
 
 recall_score_result = recall_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"recall score result: {recall_score_result:.4f}")
+func.fprint(f"Recall score result: {recall_score_result:.4f}")
 
 f1_score_result = f1_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"f1 score result: {f1_score_result:.4f}")
+func.fprint(f"F1 score result: {f1_score_result:.4f}")
 
 precision_score_result = precision_score(y_true=y_test, y_pred=y_pred)
-func.fprint(f"precision score result: {precision_score_result:.4f}")
+func.fprint(f"Precision score result: {precision_score_result:.4f}")
 
 print(
 """
@@ -561,7 +562,16 @@ x_val_prec = preprocessor.fit_transform(X_val, y_val)
 y_val_pred = voting_classifier.predict(x_val_prec)
 
 accuracy_score_result = accuracy_score(y_true=y_val, y_pred=y_val_pred)
-func.fprint(f"Validacao accuracy score result: {accuracy_score_result:.4f}")
+func.fprint(f"Validacao Accuracy score result: {accuracy_score_result:.4f}")
+
+recall_score_result = recall_score(y_true=y_val, y_pred=y_val_pred)
+func.fprint(f"Validacao Recall score result: {recall_score_result:.4f}")
+
+f1_score_result = f1_score(y_true=y_val, y_pred=y_val_pred)
+func.fprint(f"Validacao F1 score result: {f1_score_result:.4f}")
+
+precision_score_result = precision_score(y_true=y_val, y_pred=y_val_pred)
+func.fprint(f"Validacao Precision score result: {precision_score_result:.4f}")
 
 print(
 """
