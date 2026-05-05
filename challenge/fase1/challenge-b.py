@@ -1,3 +1,8 @@
+print(
+"""
+    GITHUB: https://github.com/eduardoenemark/fiap/tree/main/challenge/fase1
+""")
+
 import pandas as pd
 from sklearn.ensemble import VotingClassifier
 from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
@@ -14,7 +19,6 @@ print(
     - Isto é apenas uma prática de um exercício (desafio) de machine learning. Logo não tem nenhuma pretensão de ser
       usada em ambiente de produção.
     - Sinta-se livre para copiar ou modificar.
-    - GITHUB: https://github.com/eduardoenemark/fiap/tree/main/challenge/fase1
 """)
 
 print(
