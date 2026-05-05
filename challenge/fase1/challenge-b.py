@@ -1,6 +1,3 @@
-# --------------- IMPORTS ------------------------------------------------------------
-import sys
-
 import pandas as pd
 from sklearn.ensemble import VotingClassifier
 from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
@@ -11,23 +8,23 @@ import functions as func
 print(
 """
     NOTA TÉCNICA:
-    - Devido a complexidade do assunto tratado transposto em código de programação então optei por dividir em arquivo dedicado somente
-      a funções para o suporte do fluxo tratado, functions.py, e um segundo dedicado para o desenvolvimento de todo o fluxo de análise, 
-      pré-processamento e treinamento do modelo, challenge-b.py.
-    - Isto é apenas uma prática de um exercício (desafio) de machine learning. Logo não tem nenhuma pretensão de ser usada em ambiente
-      de produção.
+    - Devido a complexidade do assunto tratado transposto em código de programação então optei por dividir em arquivo
+      dedicado somente a funções para o suporte do fluxo tratado, functions.py, e um segundo dedicado para o
+      desenvolvimento de todo o fluxo de análise, pré-processamento e treinamento do modelo, challenge-b.py.
+    - Isto é apenas uma prática de um exercício (desafio) de machine learning. Logo não tem nenhuma pretensão de ser
+      usada em ambiente de produção.
     - Sinta-se livre para copiar ou modificar.
 """)
 
 print(
 """
-# --------------- ABOUT ------------------------------------------------------------------------------------------------
-    O câncer de mama é, atualmente, uma das maiores ameaças à saúde pública mundial e a principal causa de morte por câncer
-    entre as mulheres em praticamente todos os países. De acordo com os dados do GLOBOCAN 2022, da Agência Internacional de
-    Pesquisa em Câncer (IARC/OMS), foram registrados no mundo 2.296.840 novos casos da doença e 666.103 óbitos em apenas um
-    ano. O câncer de mama representa aproximadamente 1 em cada 4 novos diagnósticos de câncer no mundo, correspondendo a cerca
-    de 25% de todos os casos diagnosticados anualmente. É o tipo de câncer mais frequente entre as mulheres em 161 dos 185 
-    países analisados.
+# --------------- SOBRE O PROJETO --------------------------------------------------------------------------------------
+    O câncer de mama é, atualmente, uma das maiores ameaças à saúde pública mundial e a principal causa de morte por
+    câncer entre as mulheres em praticamente todos os países. De acordo com os dados do GLOBOCAN 2022, da Agência
+    Internacional de Pesquisa em Câncer (IARC/OMS), foram registrados no mundo 2.296.840 novos casos da doença e 666.103
+    óbitos em apenas um ano. O câncer de mama representa aproximadamente 1 em cada 4 novos diagnósticos de câncer no
+    mundo, correspondendo a cerca de 25% de todos os casos diagnosticados anualmente. É o tipo de câncer mais frequente
+    entre as mulheres em 161 dos 185 países analisados.
     IARC / OMS — GLOBOCAN 2022. Global Cancer Observatory. Disponível em: <https://gco.iarc.who.int>
 
     Descrição sobre o dataset utilizado neste trabalho:
@@ -89,8 +86,9 @@ assert (dataset.isnull().sum() == 0).all()
 print(
 """
 # --------------- COLUNAS DO DATASET -----------------------------------------------------------------------------------
-    O mapeamento do nome das colunas do CSV para variáveis é feito para facilitar a leitura e manutenção do código, além de evitar erros de digitação.
-    As colunas são categorizadas em numéricas e string para facilitar as etapas de pré-processamento e análise.
+    O mapeamento do nome das colunas do CSV para variáveis é feito para facilitar a leitura e manutenção do código, além
+    de evitar erros de digitação. As colunas são categorizadas em numéricas e string para facilitar as etapas de
+    pré-processamento e análise.
 """)
 COL_IDADE = 'Idade'  # type int
 COL_RACA = 'Raça'  # type str
@@ -526,5 +524,7 @@ y_val_pred = voting_classifier.predict(x_val_prec)
 accuracy_score_result = accuracy_score(y_true=y_val, y_pred=y_val_pred)
 func.fprint(f"Validacao accuracy score result: {accuracy_score_result:.4f}")
 
-# --------------- END ----------------------------------------------------------------
-sys.exit(0)
+print(
+"""
+# --------------- ENCERRADO O FLUXO ------------------------------------------------------------------------------------
+""")
