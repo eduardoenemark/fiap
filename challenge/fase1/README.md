@@ -37,6 +37,8 @@ docker run --rm fiap-challenge-fase1-9iadt-rm370509:1.0
 
 > **Nota:** O dataset já é copiado para o interior da imagem durante o processo de build.
 
+> **Volume de Saída (`/app/output`):** Este diretório é mapeado para o host para facilitar a extração dos resultados. Ao final da execução, você encontrará neste volume o arquivo [`challenge-b.ipynb`](challenge-b.ipynb) (notebook formatado e executado) e o relatório [`challenge-b.html`](challenge-b.html), contendo toda a pipeline, visualizações e métricas avaliadas.
+
 ## Metodologia & Pipeline
 
 O fluxo de trabalho segue as etapas padrão de ciência de dados, garantindo reprodutibilidade e robustez:
