@@ -6,6 +6,7 @@ WORKDIR /app
 # Define o backend do matplotlib para 'Agg' para funcionar corretamente em ambientes Docker sem monitor (headless).
 # Isso previne erros comuns ao usar 'plt.show()'.
 ENV MPLBACKEND=Agg
+ENV PYTHONUNBUFFERED=1
 ENV REPO_URL="https://github.com/eduardoenemark/fiap/tree/main/challenge/fase1"
 
 # ---------- LABEL ----------
