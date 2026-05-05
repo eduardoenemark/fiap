@@ -32,7 +32,7 @@ docker compose up
 
 **Via CLI direto (Docker ou Podman):**
 ```bash
-docker run --rm fiap-challenge-fase1-9iadt-rm370509:1.0
+docker run --rm -v ${PWD}/output:/app/output fiap-challenge-fase1-9iadt-rm370509:1.0
 ```
 
 > **Nota:** O dataset já é copiado para o interior da imagem durante o processo de build.
@@ -51,7 +51,8 @@ O fluxo de trabalho segue as etapas padrão de ciência de dados, garantindo rep
 
 As bibliotecas do ambiente Python são gerenciadas via `requirements.txt`, incluindo `scikit-learn`, `pandas`, `numpy`, `matplotlib` e `seaborn`.
 
-##  Licença & Autoria
+## Licença & Autoria
 - 
 - **Licença:** GPL-3.0
-- **Autor:** Eduardo Vieira
+- **Autor:** Eduardo Vieira Barbosa (rm370509) - Pós Tech 9IADT - FIAP
+- **Telegram:** @eduardoenemark 
