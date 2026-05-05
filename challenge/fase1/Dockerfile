@@ -34,16 +34,15 @@ COPY kaggle/ ./kaggle/
 # Instala bibliotecas do sistema necessárias para o scikit-learn (libgomp1 para n_jobs=-1)
 RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
     && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir -r requirements.txt
-
-RUN p2j -o challenge-b.py \
-    && mkdir -p /app/output \
-    && cp challenge-b.ipynb /app/output/challenge-b.ipynb \
-    && jupyter nbconvert --execute challenge-b.ipynb --to html --output /app/output/challenge-b.html
+    && pip install --no-cache-dir -r requirements.txt \
+    && mkdir -p /app/output
 
 # ---------- VOLUME ----------
 VOLUME ["/app/output"]
 
 # ---------- ENTRYPOINT/CMD ----------
 # Executa o script principal
-CMD ["python", "challenge-b.py"]
+CMD ["/bin/bash","-c", \
+    "p2j -o challenge-b.py && \
+     cp -v challenge-b.ipynb /app/output/challenge-b.ipynb && \
+     jupyter nbconvert --execute challenge-b.ipynb --to html --output /app/output/challenge-b.html"]
