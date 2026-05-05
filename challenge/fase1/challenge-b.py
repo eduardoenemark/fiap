@@ -28,34 +28,62 @@ print(
     IARC / OMS — GLOBOCAN 2022. Global Cancer Observatory. Disponível em: <https://gco.iarc.who.int>
 
     Descrição sobre o dataset utilizado neste trabalho:
-    - O dataset é uma versão pré-processada do SEER Breast Cancer Dataset, disponível no Kaggle: https://www.kaggle.com/datasets/reihanenamdari/breast-cancer
+    - O dataset é uma versão pré-processada do SEER Breast Cancer Dataset, disponível no Kaggle:
+        https://www.kaggle.com/datasets/reihanenamdari/breast-cancer
     - Colunas e seus significados:
-    ----------------------------------------------------------------------------------------------------------------------
-    | Coluna no CSV | Significado (Português) | Domínio / Valores Possíveis | Observações Clínicas |
-    |--------------|------------------------|----------------------------|----------------------|
-    | `Age` | Idade da paciente no momento do diagnóstico | Numérico inteiro | Geralmente entre 20 e 90+ anos. No trecho: `40, 47, 50, 51, 58, 68` |
-    | `Race` | Raça/etnia da paciente | Categórico | `White`, `Black`, `Asian`, `Hispanic`, `Other`, `Unknown` (varia conforme o ano do SEER) |
-    | `Marital Status` | Estado civil | Categórico | `Married`, `Single`, `Divorced`, `Widowed`, `Separated`, `Unknown` |
-    | `T Stage` | Estágio do tumor primário (sistema TNM) | Ordinal/Categórico | `TX`, `T0`, `Tis`, `T1`, `T2`, `T3`, `T4` (T1: ≤2 cm; T2: >2-5 cm; T3: >5 cm; T4: invasão de pele/pescoço) |
-    | `N Stage` | Envolvimento de linfonodos regionais (sistema TNM) | Ordinal/Categórico | `NX`, `N0`, `N1`, `N2`, `N3` (N1: 1-3 nós; N2: 4-9; N3: ≥10) |
-    | `6th Stage` | Estadiamento global da doença (6ª edição do AJCC) | Ordinal/Categórico | `I`, `IA`, `IB`, `II`, `IIA`, `IIB`, `III`, `IIIA`, `IIIB`, `IIIC`, `IV`, `IVA`, `IVB` |
-    | `differentiate` | Grau de diferenciação histológica do tumor | Ordinal/Categórico | `Well differentiated` (1), `Moderately differentiated` (2), `Poorly differentiated` (3), `Undifferentiated` (4) |
-    | `Grade` | Escore numérico de graduação histológica | Ordinal/Categórico (numérico) | `1`, `2`, `3`, `4` (corresponde diretamente à coluna acima) |
-    | `A Stage` | Agrupamento anatômico / Estadiamento resumido (SEER) | Categórico | `Localized`, `Regional`, `Distant`, `Unknown` (reflete extensão espacial da doença) |
-    | `Tumor Size` | Tamanho máximo do tumor | Numérico (contínuo) | Valores no trecho: `4, 8, 18, 20, 30, 35, 41, 63`. No SEER, **geralmente está em milímetros (mm)** ou centímetros. 63 mm (6,3 cm) é plausível; 63 cm seria impossível. Verifique a unidade original no dicionário de dados. |
-    | `Estrogen Status` | Presença de receptores de estrogênio (ER) | Categórico | `Positive`, `Negative`, `Unknown` (positivo indica possível resposta a hormonioterapia) |
-    | `Progesterone Status` | Presença de receptores de progesterona (PR) | Categórico | `Positive`, `Negative`, `Unknown` (geralmente correlacionado com ER) |
-    | `Regional Node Examined` | Número de linfonodos regionais dissecados/examinados patologicamente | Inteiro | Geralmente `0` a `100+`. Quanto maior, melhor a precisão do estadiamento. |
-    | `Regiol Node Positive` *(grifo: erro de digitação no CSV)* | Número de linfonodos regionais com metástase | Inteiro | `0` a `Regional Node Examined`. Valores do trecho: `1, 2, 5, 7` |
-    | `Survival Months` | Meses de sobrevida desde o diagnóstico até o desfecho ou último contato | Inteiro | `1` a `100+`. Inclui sobrevida global e por causa específica. |
-    | `Status` | Estado vital da paciente no encerramento do acompanhamento | Categórico | `Alive`, `Dead` |
+     1. `Age` — Idade da paciente no momento do diagnóstico.
+         Tipo: Numérico inteiro. Valores no trecho: 40, 47, 50, 51, 58, 68. Geralmente entre 20 e 90+ anos.
+     2. `Race` — Raça/etnia da paciente.
+         Tipo: Categórico. Valores: White, Black, Asian, Hispanic, Other, Unknown.
+     3. `Marital Status` — Estado civil.
+         Tipo: Categórico. Valores: Married, Single, Divorced, Widowed, Separated, Unknown.
+     4. `T Stage` — Estágio do tumor primário (sistema TNM).
+         Tipo: Ordinal/Categórico. Valores: TX, T0, Tis, T1, T2, T3, T4.
+         (T1: ≤2 cm; T2: >2–5 cm; T3: >5 cm; T4: invasão de pele/pescoço)
+     5. `N Stage` — Envolvimento de linfonodos regionais (sistema TNM).
+         Tipo: Ordinal/Categórico. Valores: NX, N0, N1, N2, N3.
+         (N1: 1–3 nós; N2: 4–9; N3: ≥10)
+     6. `6th Stage` — Estadiamento global da doença (6ª edição do AJCC).
+         Tipo: Ordinal/Categórico. Valores: I, IA, IB, II, IIA, IIB, III, IIIA, IIIB, IIIC, IV, IVA, IVB.
+     7. `differentiate` — Grau de diferenciação histológica do tumor.
+         Tipo: Ordinal/Categórico. Valores: Well differentiated (1), Moderately differentiated (2),
+         Poorly differentiated (3), Undifferentiated (4).
+     8. `Grade` — Escore numérico de graduação histológica.
+         Tipo: Ordinal/Categórico (numérico). Valores: 1, 2, 3, 4. Corresponde diretamente à coluna acima.
+     9. `A Stage` — Agrupamento anatômico / Estadiamento resumido (SEER).
+         Tipo: Categórico. Valores: Localized, Regional, Distant, Unknown.
+    10. `Tumor Size` — Tamanho máximo do tumor.
+         Tipo: Numérico (contínuo). Valores no trecho: 4, 8, 18, 20, 30, 35, 41, 63.
+         No SEER, geralmente em milímetros (mm) ou centímetros. 63 mm (6,3 cm) é plausível.
+    11. `Estrogen Status` — Presença de receptores de estrogênio (ER).
+         Tipo: Categórico. Valores: Positive, Negative, Unknown.
+         Positivo indica possível resposta a hormonioterapia.
+    12. `Progesterone Status` — Presença de receptores de progesterona (PR).
+         Tipo: Categórico. Valores: Positive, Negative, Unknown. Geralmente correlacionado com ER.
+    13. `Regional Node Examined` — Número de linfonodos regionais dissecados/examinados patologicamente.
+         Tipo: Inteiro. Geralmente 0 a 100+. Quanto maior, melhor a precisão do estadiamento.
+    14. `Regiol Node Positive` (erro de digitação no CSV: "Regiol" em vez de "Regional") —
+         Número de linfonodos regionais com metástase.
+         Tipo: Inteiro. Valores de 0 até Regional Node Examined. Valores no trecho: 1, 2, 5, 7.
+    15. `Survival Months` — Meses de sobrevida desde o diagnóstico até o desfecho ou último contato.
+         Tipo: Inteiro. Valores: 1 a 100+. Inclui sobrevida global e por causa específica.
+    16. `Status` — Estado vital da paciente no encerramento do acompanhamento.
+         Tipo: Categórico. Valores: Alive, Dead.
     
     ###Notas Técnicas Importantes:
-    1. **Sistema TNM e AJCC**: As colunas `T Stage`, `N Stage`, `6th Stage` e `A Stage` referem-se a classificações oncológicas padronizadas pelo *American Joint Committee on Cancer (AJCC)* e pelo programa SEER. O estadiamento combina T, N e (implicitamente) M para definir o prognóstico.
-    2. **`differentiate` vs `Grade`**: São informações redundantes mas coletadas de formas diferentes. `Grade` é um escore numérico (1-4) usado em escores como Nottingham; `differentiate` é a descrição textual equivalente.
-    3. **`Regiol Node Positive`**: O CSV original apresenta um erro de digitação (`Regiol` em vez de `Regional`). Não afeta a lógica, mas recomenda-se corrigir ao carregar os dados.
-    4. **`Tumor Size`**: Verifique o dicionário oficial do SEER ou o arquivo `codebook` do Kaggle. Em versões mais recentes, o tamanho é reportado em **cm**; nesta versão específica, os valores sugerem **mm** ou uma gravação inconsistente.
-    5. **Viés de exclusão**: Conforme a descrição, pacientes com tempo de vida < 1 mês, tamanho tumoral desconhecido, linfonodos não examinados ou positivos desconhecidos foram removidos. Isso pode enviesar a distribuição para estágios mais avançados ou melhor acompanhados.
+    1. **Sistema TNM e AJCC**: As colunas `T Stage`, `N Stage`, `6th Stage` e `A Stage` referem-se a classificações
+    oncológicas padronizadas pelo *American Joint Committee on Cancer (AJCC)* e pelo programa SEER. O estadiamento
+    combina T, N e (implicitamente) M para definir o prognóstico.
+    2. **`differentiate` vs `Grade`**: São informações redundantes mas coletadas de formas diferentes. `Grade` é um
+    escore numérico (1-4) usado em escores como Nottingham; `differentiate` é a descrição textual equivalente.
+    3. **`Regiol Node Positive`**: O CSV original apresenta um erro de digitação (`Regiol` em vez de `Regional`).
+    Não afeta a lógica, mas recomenda-se corrigir ao carregar os dados.
+    4. **`Tumor Size`**: Verifique o dicionário oficial do SEER ou o arquivo `codebook` do Kaggle. Em versões mais
+    recentes, o tamanho é reportado em **cm**; nesta versão específica, os valores sugerem **mm** ou uma gravação
+    inconsistente.
+    5. **Viés de exclusão**: Conforme a descrição, pacientes com tempo de vida < 1 mês, tamanho tumoral desconhecido,
+    linfonodos não examinados ou positivos desconhecidos foram removidos. Isso pode enviesar a distribuição para
+    estágios mais avançados ou melhor acompanhados.
 """)
 
 print(
@@ -109,7 +137,8 @@ COL_STATUS = 'Status'  # type str
 
 print(
 """
-    O rename das colunas facilitará na leitura dos dados dos gráficos e entendimento de correlações, por isto é aplicado já no início do fluxo.
+    O rename das colunas facilitará na leitura dos dados dos gráficos e entendimento de correlações, por isto é aplicado
+    já no início do fluxo.
 """)
 dataset = dataset.rename(columns={
     'Age': COL_IDADE,
@@ -149,11 +178,12 @@ COLUNAS = [COL_IDADE,
 
 print(
 """
-    A distinção entre colunas numéricas e string (str) é importante para as etapas de pré-processamento (transformação dos dados) 
-    e conjunto de colunas que vão compor determinado gráfico, por exemplo.
+    A distinção entre colunas numéricas e string (str) é importante para as etapas de pré-processamento (transformação
+    dos dados) e conjunto de colunas que vão compor determinado gráfico, por exemplo.
 
-    Neste processo de análise dos dados do dataset, além da inspeção visual em primeiro momento, também, temos a recuperação de
-    outros dados que nos ajudam a compreender os tipos (info), grupo de dados (groupby) e quantidades (count).
+    Neste processo de análise dos dados do dataset, além da inspeção visual em primeiro momento, também, temos a
+    recuperação de outros dados que nos ajudam a compreender os tipos (info), grupo de dados (groupby) e quantidades
+    (count).
 """)
 COLUNAS_NUMERICAS = [COL_IDADE,
                      COL_GRAU_HISTOLOGICO,
@@ -243,8 +273,8 @@ dataset = func.convert_columns_to_numeric(dataset, COLUNAS_NUMERICAS)
 
 print(
 """
-    A validação é realizada para garantir que os dados estejam dentro dos domínios e intervalos esperados. Caso uma linha
-    contenha um valor inválido, ela é removida do dataset.
+    A validação é realizada para garantir que os dados estejam dentro dos domínios e intervalos esperados. Caso uma
+    linha contenha um valor inválido, ela é removida do dataset.
 """)
 error_counter = 0
 INT_REGEX = r'^[0-9]+$'
@@ -286,7 +316,8 @@ if sum_duplicated_lines > 0:
     dataset.drop_duplicates(inplace=True)
 
 func.fprint(
-    f"Total de linhas removidas apos as transformacoes e validacoes do dataset {dataset_initial_rows - func.get_total_rows(dataset)}")
+    f"Total de linhas removidas apos as transformacoes e validacoes do"
+    f"dataset {dataset_initial_rows - func.get_total_rows(dataset)}")
 
 print(
 """
@@ -295,13 +326,13 @@ print(
     detecção de anomalias baseado em densidade. Ele identifica pontos que estão em regiões de baixa densidade em
     comparação com seus vizinhos, o que pode indicar que são outliers.
     
-    Quando de certa forma não somos especialistas nos dados tratados em um dataset procuramos estratégias como "find best"
-    para parâmetros como n_neighbors_range, por exemplo. Esta estratégia tem a desvantagem de desprender maior custo
-    computacional de processamento de dados.
+    Quando de certa forma não somos especialistas nos dados tratados em um dataset procuramos estratégias como
+    "find best" para parâmetros como n_neighbors_range, por exemplo. Esta estratégia tem a desvantagem de desprender
+    maior custo computacional de processamento de dados.
     
-    O que temos como retorno padrão é -1 para outliers e 1 para inliers, ou seja, pontos normais. Assim, conseguimos calcular
-    o percentual de outliers no dataset, o que nos ajuda a entender a proporção de dados que são considerados anômalos
-    em relação ao total de dados.
+    O que temos como retorno padrão é -1 para outliers e 1 para inliers, ou seja, pontos normais. Assim, conseguimos
+    calcular o percentual de outliers no dataset, o que nos ajuda a entender a proporção de dados que são considerados
+    anômalos em relação ao total de dados.
 """)
 lof_n_neighbors, lof_contamination = func.find_best_lof_parameters(X=dataset[COLUNAS_NUMERICAS],
                                                                    n_neighbors_range=range(3, len(COLUNAS_NUMERICAS)))
@@ -331,11 +362,13 @@ func.fprint(f"Total de linhas após remoção de outliers: {func.get_total_rows(
 print(
 """
 # --------------- BALANCEAMENTO DO DATASET -----------------------------------------------------------------------------
-    A nossa variável target (y) é a coluna STATUS, então um primeiro balanceamento por ela é necessário para melhores resultados do modelo.
-    A outras variáveis do tipo string faremos um balanceamento caso o limite máximo, threshold, for igual ou maior que 50%, 0.5.
+    A nossa variável target (y) é a coluna STATUS, então um primeiro balanceamento por ela é necessário para melhores
+    resultados do modelo. A outras variáveis do tipo string faremos um balanceamento caso o limite máximo, threshold,
+    for igual ou maior que 50%, 0.5.
 """)
 balanced_dataset = func.balance_dataset(dataset, COL_STATUS)
-func.fprint(f"Distribuição balanceada pela coluna {COL_STATUS}: {balanced_dataset[COL_STATUS].value_counts().to_dict()}")
+func.fprint(f"Distribuição balanceada pela coluna {COL_STATUS}:"
+            f"{balanced_dataset[COL_STATUS].value_counts().to_dict()}")
 
 threshold_n = 0.5
 for col in [col for col in COLUNAS_STRINGS if col != COL_STATUS]:
@@ -349,15 +382,15 @@ assert func.get_total_rows(balanced_dataset) >= 200, "O dataset balanceado não 
 print(
 """
 # --------------- HISTOGRAMA DAS COLUNAS -------------------------------------------------------------------------------
-    O histograma com um gráfico de barras que representa a distribuição de frequência de um conjunto de dados, nos ajuda a
-    visualizar quantidades, como estão distribuídas e possíveis diferenças acentuadas.
+    O histograma com um gráfico de barras que representa a distribuição de frequência de um conjunto de dados, nos ajuda
+    a visualizar quantidades, como estão distribuídas e possíveis diferenças acentuadas.
 
-    A função plot_distribution_grid em plot_type do tipo hist (histograma) traz sobre o gráfico de barras o KDE (Kernel Density
-    Estimation) que é uma técnica estatística que cria uma curva que representa a distribuição de dados, mostra onde os dados
-    estão mais concentrados.
+    A função plot_distribution_grid em plot_type do tipo hist (histograma) traz sobre o gráfico de barras o KDE (Kernel
+    Density Estimation) que é uma técnica estatística que cria uma curva que representa a distribuição de dados, mostra
+    onde os dados estão mais concentrados.
 
-    Quando temos colunas não numéricas fazemos o gráfico de contagem (count) que é um tipo de gráfico de barras que mostra a
-    frequência de cada categoria em uma coluna categórica.
+    Quando temos colunas não numéricas fazemos o gráfico de contagem (count) que é um tipo de gráfico de barras que
+    mostra a frequência de cada categoria em uma coluna categórica.
 """)
 # colunas numéricas hist:
 func.plot_distribution_grid(balanced_dataset, COLUNAS_NUMERICAS, plot_type='hist')
@@ -382,28 +415,32 @@ print(
 """
 # --------------- HEATMAP DAS COLUNAS ----------------------------------------------------------------------------------
     Os gráficos do tipo mapa de calor (heatmap) conseguimos identificar correlações fortes e fracas entre as colunas.
-    Quanto mais próximo de 1 mais positiva é a correlação, quanto mais próximo de -1 mais negativa é a correlação, ou seja
-    é inversamente proporcional. Quando a variável encontra a si mesma o valor será igual a 1.
+    Quanto mais próximo de 1 mais positiva é a correlação, quanto mais próximo de -1 mais negativa é a correlação,
+    ou seja é inversamente proporcional. Quando a variável encontra a si mesma o valor será igual a 1.
 
-    No heatmap plotado podemos observar que a idade influência na sobrevida reduzida dos meses, relação negativa. Também,
-    Tumores maiores tendem a ter maior probabilidade de disseminação para os linfonodos, relação positiva.
+    No heatmap plotado podemos observar que a idade influência na sobrevida reduzida dos meses, relação negativa.
+    Também, Tumores maiores tendem a ter maior probabilidade de disseminação para os linfonodos, relação positiva.
 """)
 func.plot_correlation_heatmap(balanced_dataset, COLUNAS_NUMERICAS)
 
 print(
 """
 # --------------- COLUMN TRANSFORMER -----------------------------------------------------------------------------------
-    A fase de transformação das colunas presente no dataset é importante para preparar os dados para o treinamento do modelo.
-    Assim, como dividir o nosso dataset em conjunto de treino e teste, para avaliar o desempenho do modelo em dados não vistos
-    durante o treinamento.
+    A fase de transformação das colunas presente no dataset é importante para preparar os dados para o treinamento do
+    modelo. Assim, como dividir o nosso dataset em conjunto de treino e teste, para avaliar o desempenho do modelo em
+    dados não vistos durante o treinamento.
     
-    Neste momento temos que a nossa variável target(y) é o STATUS que indica se a paciente está viva ou morta. Então, usamos
-    todas as colunas, exceto STATUS, para prever se a paciente está viva ou morta.
+    Neste momento temos que a nossa variável target(y) é o STATUS que indica se a paciente está viva ou morta. Então,
+    usamos todas as colunas, exceto STATUS, para prever se a paciente está viva ou morta.
 """)
 X = balanced_dataset.drop(COL_STATUS, axis=1)
 y = balanced_dataset[COL_STATUS]
 
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=func.RANDOM_STATE, stratify=y)
+x_train, x_test, y_train, y_test = train_test_split(X,
+                                                    y,
+                                                    test_size=0.2,
+                                                    random_state=func.RANDOM_STATE,
+                                                    stratify=y)
 
 preprocessor = func.build_preprocessor(COLUNAS_STRINGS, COLUNAS_NUMERICAS, COL_STATUS)
 
@@ -413,7 +450,8 @@ x_test = preprocessor.fit_transform(x_test, y_test)
 print(
 """
     Os modelos (algoritmos) entendem naturalmente números, então a string como "dead" ou "alive" não fará sentido.
-    Logo precisamos converter essas strings para representações numéricas números, por exemplo, "dead" para 0 e "alive" para 1.
+    Logo precisamos converter essas strings para representações numéricas números, por exemplo, "dead" para 0 e "alive"
+    para 1.
 """)
 y_train = func.encode_labels(y_train)
 y_test = func.encode_labels(y_test)
@@ -421,19 +459,19 @@ y_test = func.encode_labels(y_test)
 print(
 """
 # --------------- TREINO E TESTES --------------------------------------------------------------------------------------
-    Suponha que você faça uma pergunta complexa a milhares de pessoas aleatórias e, em seguida, agregue as respostas delas.
-    Em muitos casos, você descobrirá que essa resposta agregada é melhor do que a resposta de um especialista.
+    Suponha que você faça uma pergunta complexa a milhares de pessoas aleatórias e, em seguida, agregue as respostas
+    delas. Em muitos casos, você descobrirá que essa resposta agregada é melhor do que a resposta de um especialista.
     Isso é chamado de sabedoria popular.
-    (tradução: Capitulo 7, Aurélien Géron. Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow. 3ed.O'Reilly)
+    (tradução: Capitulo 7, Aurélien Géron. Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow.3ed.O'Reilly)
 
     O VotingClassifier é um meta-classificador que combina as previsões de vários classificadores base para melhorar a
     precisão geral. Ele pode usar votação "hard" (a classe mais votada é a previsão final) ou "soft" (as probabilidades
     previstas são somadas e a classe com a maior probabilidade é a previsão final).
     
-    Como visto anteriormente o nosso dataset tem outliers em várias colunas, e quando analisado percebemos que muitos deles
-    fazem sentido, pois a amostragem possui certa adversidade. Logo, optei por não remover os outliers, mas sim usar
-    um modelo do tipo ensemble como o VotingClassifier que é mais robusto a outliers, pois combina as previsões de vários
-    modelos base.
+    Como visto anteriormente o nosso dataset tem outliers em várias colunas, e quando analisado percebemos que muitos
+    deles fazem sentido, pois a amostragem possui certa adversidade. Logo, optei por não remover os outliers, mas sim
+    usar um modelo do tipo ensemble como o VotingClassifier que é mais robusto a outliers, pois combina as previsões de
+    vários modelos base.
 """)
 voting_classifier = VotingClassifier(estimators=[
     ('logistic_regression', func.get_logistic_regression()),
@@ -459,8 +497,8 @@ y_pred = voting_classifier.predict(x_test)
 print(
 """
 # --------------- METRICAS ---------------------------------------------------------------------------------------------
-    Depois de todo o trabalho realizado neste fluxo, agora temos a etapa de avaliação do modelo se está minimamente "bom".
-    Caso não esteja é importante que revisemos as etapas anteriores afim de promover os ajustes necessários.
+    Depois de todo o trabalho realizado neste fluxo, agora temos a etapa de avaliação do modelo se está minimamente
+    "bom". Caso não esteja é importante que revisemos as etapas anteriores afim de promover os ajustes necessários.
     
     Temos 4 métricas que podemos resumir em perguntas onde a resposta é um percentual:
     - Accuracy: De todas as previsões feitas, quantas estavam corretas?
@@ -469,8 +507,8 @@ print(
     - F1 Score: Qual é a média harmônica entre precisão e recall, refletindo o equilíbrio do modelo entre identificar
                 corretamente os positivos e evitar falsos alarmes?
     
-    Enquanto as três primeiras métricas avaliam aspectos isolados (desempenho geral, cobertura ou qualidade das previsões
-    positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
+    Enquanto as três primeiras métricas avaliam aspectos isolados (desempenho geral, cobertura ou qualidade das
+    previsões positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
 """)
 accuracy_score_result = accuracy_score(y_true=y_test, y_pred=y_pred)
 func.fprint(f"accuracy score result: {accuracy_score_result:.4f}")
@@ -487,9 +525,9 @@ func.fprint(f"precision score result: {precision_score_result:.4f}")
 print(
 """
 # --------------- VALIDACAO --------------------------------------------------------------------------------------------
-    A nossa última parte do fluxo: a validação. Vamos conferi os resultados da métricas calculadas, tomando uma "linha de base"
-    de thresholds (limiares) na faixa de 0.75 a 0.80. Como se trata de um exercício escolar não precisamos ser tão rigorosos,
-    mas em um ambiente de produção é importante que tenhamos limiares mais altos.
+    A nossa última parte do fluxo: a validação. Vamos conferi os resultados da métricas calculadas, tomando uma
+    "linha de base" de thresholds (limiares) na faixa de 0.75 a 0.80. Como se trata de um exercício escolar não
+    precisamos ser tão rigorosos, mas em um ambiente de produção é importante que tenhamos limiares mais altos.
 """)
 ACCEPTABLE_ACCURACY = 0.80
 ACCEPTABLE_RECALL = 0.75
@@ -503,14 +541,15 @@ is_model_valid = (
     precision_score_result >= ACCEPTABLE_PRECISION
 )
 
-assert is_model_valid, "O modelo NÃO atingiu os critérios mínimos esperados. Revise os hiperparâmetros ou o pré-processamento."
+assert is_model_valid, ("O modelo NÃO atingiu os critérios mínimos esperados. Revise os hiperparâmetros ou o"
+                        "pré-processamento.")
 func.fprint("Validação: O modelo está dentro dos critérios aceitáveis!")
 
 print(
 """
-    Uma última rodada para validação vamos usar uma amostra (10%) dos registros que foram removidas anteriormente durante o 
-    processo de balanceamento para a realização de novas predições. Na intenção de simplificar esta parte final usaremos
-    apenas a métrica de acurácia.
+    Uma última rodada para validação vamos usar uma amostra (10%) dos registros que foram removidas anteriormente
+    durante o processo de balanceamento para a realização de novas predições. Na intenção de simplificar esta parte
+    final usaremos apenas a métrica de acurácia.
 """)
 diff_dataset = func.diff_dataframe(dataset, balanced_dataset)
 diff_random_dataset = func.get_percentage_df(diff_dataset, 0.10)
