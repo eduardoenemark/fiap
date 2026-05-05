@@ -5,7 +5,7 @@ print(
 
 import pandas as pd
 from sklearn.ensemble import VotingClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
 from sklearn.model_selection import train_test_split
 
 import functions as func
@@ -514,8 +514,8 @@ print(
     Enquanto as três primeiras métricas avaliam aspectos isolados (desempenho geral, cobertura ou qualidade das
     previsões positivas), o F1 Score responde diretamente à pergunta: "O modelo está equilibrado?".
 """)
-accuracy_score_result, recall_score_result, f1_score_result, precision_score_result = func.calculate_and_print_metrics(
-    y_test, y_pred, "Avaliação do Modelo")
+accuracy_score_result, recall_score_result, f1_score_result, precision_score_result = (
+    func.calculate_and_print_metrics(y_test, y_pred, "Avaliação do Modelo"))
 
 print(
 """
