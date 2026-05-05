@@ -35,7 +35,7 @@ docker compose up
 docker run --rm fiap-challenge-fase1-9iadt-rm370509:1.0
 ```
 
-> **Nota:** O dataset já é copiado para o interior da imagem durante o processo de build, portanto, não é necessário montar volumes externos.
+> **Nota:** O dataset já é copiado para o interior da imagem durante o processo de build.
 
 ## Metodologia & Pipeline
 
