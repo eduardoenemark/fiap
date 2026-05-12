@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.ref.name="fiap-challenge-fase1-9iadt-rm370509" \
     org.opencontainers.image.authors="Eduardo Vieira Barbosa"       \
     org.opencontainers.image.source="${REPO_URL}"           \
     org.opencontainers.image.title="FIAP Challenge Fase 1 - Pós Tech 9IADT" \
-    org.opencontainers.image.description="H2 Database Engine container image" \
+    org.opencontainers.image.description="Container image para pipeline de ML de previsão de vida ou morte" \
     org.opencontainers.image.created="${CREATED_DATETIME}"  \
     org.opencontainers.image.licenses="GPL-3.0"       \
     org.opencontainers.image.purpose="Exercício avaliativo da primeira fase" \
@@ -44,5 +44,6 @@ VOLUME ["/app/output"]
 # Executa o script principal
 CMD ["/bin/bash","-c", \
     "p2j -o challenge-b.py && \
-     cp -v challenge-b.ipynb functions.py /app/output/ && \
-     jupyter nbconvert --execute challenge-b.ipynb --to html --output /app/output/challenge-b.html"]
+     jupyter nbconvert --execute challenge-b.ipynb --to notebook --output /app/output/challenge-b.ipynb --ExecutePreprocessor.timeout=-1 && \
+     cp -v functions.py /app/output/ && \
+     jupyter nbconvert --to html --in /app/output/challenge-b.ipynb --output /app/output/challenge-b.html"]
