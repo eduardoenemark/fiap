@@ -50,7 +50,7 @@ O fluxo de trabalho segue as etapas padrão de ciência de dados, garantindo rep
 
 ##  Dependências
 
-As bibliotecas do ambiente Python são gerenciadas via `requirements.txt`, incluindo `scikit-learn`, `pandas`, `numpy`, `matplotlib` e `seaborn`.
+As bibliotecas do ambiente Python são gerenciadas via `requirements.txt`, incluindo `scikit-learn`, `pandas`, `numpy`, `matplotlib`, `seaborn`, `notebook` e `p2j`.
 
 ## Licença & Autoria
 
