@@ -15,7 +15,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-
+from sklearn.utils import resample
 
 # --------------- CONSTANTES ---------------------------------------------------------
 """
@@ -26,7 +26,7 @@ RANDOM_STATE = 42
 
 # --------------- FUNCTIONS ----------------------------------------------------------
 
-def fprint(str:str|object):
+def fprint(str: str | object):
     """
     Imprime uma mensagem formatada no console com linhas de separação visuais.
 
@@ -215,7 +215,7 @@ def get_best_knn_classifier(x_train, y_train, x_test, y_test, k_range=range(1, 2
     best_acc = 0
     best_instance = None
     for i in k_range:
-        instance = KNeighborsClassifier(n_neighbors=i)
+        instance = KNeighborsClassifier(n_neighbors=i, n_jobs=-1)
         instance.fit(x_train, y_train)
         y_pred = instance.predict(x_test)
         acc = accuracy_score(y_test, y_pred)
@@ -237,9 +237,8 @@ def get_linear_svc_for_voting(random_state=42):
         CalibratedClassifierCV: Um calibrador com SVC linear dentro.
     """
     return CalibratedClassifierCV(
-        LinearSVC(C=1.0, random_state=random_state, max_iter=10000),
-        cv=3
-    )
+        LinearSVC(C=1.0, random_state=random_state, max_iter=10000, class_weight='balanced'),
+        cv=3)
 
 
 def get_logistic_regression(random_state=42):
@@ -252,7 +251,7 @@ def get_logistic_regression(random_state=42):
     Returns:
         LogisticRegression: Uma instância de regressão logística.
     """
-    return LogisticRegression(random_state=random_state)
+    return LogisticRegression(max_iter=1000, class_weight='balanced', random_state=random_state)
 
 
 def get_random_forest(random_state=42):
@@ -266,6 +265,7 @@ def get_random_forest(random_state=42):
         RandomForestClassifier: Uma instância de Random Forest.
     """
     return RandomForestClassifier(n_estimators=100,
+                                  class_weight='balanced',
                                   max_leaf_nodes=10,
                                   n_jobs=-1,
                                   random_state=random_state)
@@ -281,8 +281,7 @@ def get_svc(random_state=42):
     Returns:
         SVC: Uma instância de Support Vector Classifier.
     """
-    return SVC(probability=True,
-               random_state=random_state)
+    return SVC(kernel='rbf', probability=True, class_weight='balanced', random_state=random_state)
 
 
 def get_decision_tree(random_state=42):
@@ -384,30 +383,45 @@ def remove_outlier_rows(df, outlier_labels_df, column_name='in_and_outlier_label
     return cleaned_df.reset_index(drop=True)
 
 
-def balance_dataset(df, target_column):
+def balance_dataset_using_resample(dataset, target_col='Status'):
     """
-    Realiza o balanceamento de classes no dataset via undersampling (amostragem aleatória).
-    Mantém apenas a quantidade de amostras igual à classe minoritária.
+    Aplica balanceamento de classes via sobressampling na classe minoritária
+    para equilibrar um dataset binário (duas classes).
+    Abstrai valores específicos (como 'alive'/'dead'), funcionando para quaisquer duas classes.
 
     Args:
-        df (pd.DataFrame): O dataset de entrada.
-        target_column (str): Nome da coluna alvo que deseja-se balancear.
+        dataset (pd.DataFrame): O dataset de entrada.
+        target_col (str): Nome da coluna alvo com exatamente duas classes.
 
     Returns:
-        pd.DataFrame: Dataset balanceado com índice resetado.
+        pd.DataFrame: Dataset balanceado.
     """
-    # Encontra a menor quantidade de amostras entre as classes
-    min_count = df[target_column].value_counts().min()
+    classes = dataset[target_col].unique()
 
-    # Amostra aleatoriamente (sample) o número de linhas igual à classe menor
-    # para cada classe única, e concatena os resultados.
-    balanced_df = pd.concat([
-        df[df[target_column] == cls].sample(n=min_count, random_state=RANDOM_STATE)
-        for cls in df[target_column].unique()
-    ])
+    # Garante que a coluna possui exatamente duas classes
+    if len(classes) != 2:
+        raise ValueError(f"A coluna '{target_col}' deve conter exatamente duas classes.")
 
-    # Reseta o índice para evitar "buracos" numéricos após a remoção
-    return balanced_df.reset_index(drop=True)
+    # Separa os DataFrames por classe
+    df_class_0 = dataset[dataset[target_col] == classes[0]]
+    df_class_1 = dataset[dataset[target_col] == classes[1]]
+
+    # Identifica a classe maioritária
+    if len(df_class_0) >= len(df_class_1):
+        majority_df = df_class_0
+        minority_df = df_class_1
+    else:
+        majority_df = df_class_1
+        minority_df = df_class_0
+
+    # Realiza oversampling na classe minoritária
+    minority_df_upsampled = resample(minority_df, replace=True, n_samples=len(majority_df),
+                                     random_state=RANDOM_STATE)
+
+    balanced_df = pd.concat([majority_df, minority_df_upsampled])
+
+    fprint(f"Balanceado via sobressampling. Distribuição: {balanced_df[target_col].value_counts().to_dict()}")
+    return balanced_df.sample(frac=1, random_state=RANDOM_STATE).reset_index(drop=True)
 
 
 def check_class_imbalance(df, column, threshold):
@@ -494,7 +508,7 @@ def diff_dataframe(df_a, df_b):
     return diff_df.reset_index(drop=True)
 
 
-def get_percentage_df(df, percentage):
+def get_sampling_df(df, percentage):
     """
     Retorna um DataFrame resultante da amostragem aleatória de x porcento das linhas.
 
@@ -612,12 +626,21 @@ def encode_labels(y):
 
 def calculate_and_print_metrics(y_true, y_pred, label="Model"):
     """
-    Calcula, imprime e retorna as métricas de avaliação.
+    Calcula as métricas de avaliação (Acurácia, Recall, F1-Score e Precision) para um modelo de classificação.
+    Imprime os resultados formatados no console usando a função `fprint` para separação visual.
+
+    Args:
+        y_true (array-like): Rótulos reais (verdadeiros) do conjunto de dados.
+        y_pred (array-like): Rótulos previstos pelo modelo.
+        label (str): Identificador a ser exibido na saída (padrão: "Model").
+
+    Returns:
+        tuple: Uma tupla contendo (accuracy, recall, f1_score, precision).
     """
     acc = accuracy_score(y_true, y_pred)
-    rec = recall_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred)
-    prec = precision_score(y_true, y_pred)
+    rec = recall_score(y_true, y_pred, zero_division=0)
+    f1 = f1_score(y_true, y_pred, zero_division=0)
+    prec = precision_score(y_true, y_pred, zero_division=0)
 
     fprint(f"{label}")
     print(f"Acurácia: {acc:.4f}")
