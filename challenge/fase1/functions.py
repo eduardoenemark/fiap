@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sb
+from IPython.display import display as ipy_display
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
@@ -114,7 +115,8 @@ def plot_distribution_grid(df, columns, plot_type='hist', suptitle='Distribuiç�
     plt.suptitle(f'{suptitle} ({plot_type})', fontsize=12)
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.show()
+    ipy_display(fig)
+    plt.close(fig)
 
 
 def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
@@ -193,7 +195,8 @@ def plot_boxplot_outliers(df, columns, bins=30, y_group_size=None):
 
     plt.suptitle('Boxplots com Outliers', fontsize=12)
     plt.tight_layout()
-    plt.show()
+    ipy_display(fig)
+    plt.close(fig)
 
 
 def get_best_knn_classifier(x_train, y_train, x_test, y_test, k_range=range(1, 20)):
@@ -569,7 +572,7 @@ def plot_correlation_heatmap(df, columns=None, figsize=(10, 8)):
     corr_matrix = numeric_df.corr()
 
     # Create heatmap
-    plt.figure(figsize=figsize)
+    fig = plt.figure(figsize=figsize)
     sb.heatmap(corr_matrix,
                annot=True,
                cmap='coolwarm',
@@ -580,7 +583,8 @@ def plot_correlation_heatmap(df, columns=None, figsize=(10, 8)):
 
     plt.title('Mapa de Calor de Correlação')
     plt.tight_layout()
-    plt.show()
+    ipy_display(fig)
+    plt.close(fig)
 
 
 def build_preprocessor(colunas_strings, colunas_numericas, col_target):
