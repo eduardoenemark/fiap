@@ -3,10 +3,8 @@ FROM python:3.12.3-slim
 WORKDIR /app
 
 # ---------- ENV ----------
-# Define o backend do matplotlib para 'Agg' para funcionar corretamente em ambientes Docker sem monitor (headless).
-# Isso previne erros comuns ao usar 'plt.show()'.
-ENV MPLBACKEND=Agg
 ENV PYTHONUNBUFFERED=1
+ENV MPLBACKEND="module://ipykernel.pylab.backend_inline"
 ENV REPO_URL="https://github.com/eduardoenemark/fiap/tree/main/challenge/fase1"
 
 # ---------- LABEL ----------

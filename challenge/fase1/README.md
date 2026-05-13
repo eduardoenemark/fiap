@@ -17,7 +17,7 @@ O modelo foi treinado e validado com uma versão pré-processada do [SEER Breast
 
 ## Instalação & Construção
 
-O projeto oferece scripts automatizados (`build-image.sh` para Linux/macOS e `build-image.cmd` para Windows) que detectam e utilizam automaticamente o Docker ou Podman instalado. Durante o build, a imagem é gerada com a tag `fiap-challenge-fase1-9iadt-rm370509:1.0`. O `Dockerfile` configura variáveis de ambiente essenciais, como `MPLBACKEND=Agg`, para garantir o funcionamento correto do matplotlib em ambientes headless.
+O projeto oferece scripts automatizados (`build-image.sh` para Linux/macOS e `build-image.cmd` para Windows) que detectam e utilizam automaticamente o Docker ou Podman instalado. Durante o build, a imagem é gerada com a tag `fiap-challenge-fase1-9iadt-rm370509:1.0`. O `Dockerfile` configura variáveis de ambiente essenciais, como `MPLBACKEND`, para garantir o funcionamento correto do matplotlib em ambientes headless.
 
 > *Os scripts detectam automaticamente se `docker` ou `podman` está disponível e utilizam o primeiro encontrado.*
 
